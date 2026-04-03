@@ -633,3 +633,46 @@ if __name__ == "__main__":
 
 # Fix the _groq_analyze method with correct model names
 # Replace the existing _groq_analyze method
+
+# ============================================================
+# CORE RULE: NO LEGAL JARGON - WE APPLY LAW, WE ARE NOT LAWYERS
+# ============================================================
+
+LEGAL_JARGON_BLOCKLIST = [
+    "heretofore", "wherein", "whereas", "party of the first part",
+    "party of the second part", "witnesseth", "aforesaid", "hereinafter",
+    "thereto", "whereof", "thence", "thereunder", "hereunder",
+    "notwithstanding", "in witness whereof", "know all men by these presents",
+    "to wit", "said", "such", "same", "then and there"
+]
+
+def remove_legal_jargon(text: str) -> str:
+    """Strip legal jargon from any output"""
+    for jargon in LEGAL_JARGON_BLOCKLIST:
+        text = text.replace(jargon, "")
+    return text
+
+def is_legal_jargon(text: str) -> bool:
+    """Check if text contains legal jargon"""
+    for jargon in LEGAL_JARGON_BLOCKLIST:
+        if jargon.lower() in text.lower():
+            return True
+    return False
+
+# Wrap the analyze function to filter jargon
+original_analyze = LegalAnalyzer.analyze if 'LegalAnalyzer' in dir() else None
+
+def clean_analyze(question, model=None, provider="auto"):
+    """Analyze law without legal jargon"""
+    result = LegalAnalyzer.analyze(question, model, provider) if original_analyze else "Analysis not available"
+    
+    # Remove legal jargon
+    result = remove_legal_jargon(result)
+    
+    # Add plain language prefix
+    prefix = "\n[PLAIN LANGUAGE LAW APPLICATION]\n"
+    return prefix + result
+
+# Replace if exists
+if original_analyze:
+    LegalAnalyzer.analyze = clean_analyze
