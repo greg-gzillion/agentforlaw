@@ -367,3 +367,92 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+class CaseLaw:
+    """Case law - judicial decisions that interpret statutes, regulations, constitutions"""
+    
+    @staticmethod
+    def get_case(citation: str) -> Dict:
+        """Get case by citation (e.g., 'Marbury v. Madison', '5 U.S. 137')"""
+        try:
+            # Search CourtListener
+            url = f"https://www.courtlistener.com/api/rest/v3/opinions/?search={citation.replace(' ', '+')}"
+            response = requests.get(url, timeout=10)
+            if response.status_code == 200:
+                data = response.json()
+                if data.get('results'):
+                    r = data['results'][0]
+                    return {
+                        "case_name": r.get('case_name', citation),
+                        "citation": r.get('citation', 'Unknown'),
+                        "court": r.get('court', 'Unknown'),
+                        "date": r.get('date_filed', 'Unknown'),
+                        "url": r.get('absolute_url', ''),
+                        "summary": r.get('plain_text', '')[:500] if r.get('plain_text') else ''
+                    }
+            return {"error": "Case not found", "search_url": f"https://scholar.google.com/scholar?q={citation.replace(' ', '+')}"}
+        except Exception as e:
+            return {"error": str(e), "search_url": f"https://www.courtlistener.com/?q={citation.replace(' ', '+')}"}
+    
+    @staticmethod
+    def search_cases(query: str, court: str = None) -> List[Dict]:
+        """Search case law by keyword"""
+        try:
+            url = f"https://www.courtlistener.com/api/rest/v3/opinions/?search={query.replace(' ', '+')}"
+            if court:
+                url += f"&court={court}"
+            response = requests.get(url, timeout=10)
+            if response.status_code == 200:
+                data = response.json()
+                return [{
+                    "case_name": r.get('case_name', 'Unknown'),
+                    "citation": r.get('citation', 'Unknown'),
+                    "court": r.get('court', 'Unknown'),
+                    "date": r.get('date_filed', 'Unknown'),
+                    "url": r.get('absolute_url', '')
+                } for r in data.get('results', [])[:10]]
+            return []
+        except:
+            return []
+    
+    @staticmethod
+    def get_cases_by_citation(citation: str) -> Dict:
+        """Get case by standard citation (e.g., '347 U.S. 483' for Brown v. Board)"""
+        # Parse citation like "347 U.S. 483"
+        return CaseLaw.get_case(citation)
+    
+    @staticmethod
+    def get_landmark_cases() -> List[Dict]:
+        """Return list of landmark US cases"""
+        return [
+            {"name": "Marbury v. Madison", "citation": "5 U.S. 137", "year": 1803, "holding": "Judicial review established"},
+            {"name": "McCulloch v. Maryland", "citation": "17 U.S. 316", "year": 1819, "holding": "Federal supremacy, implied powers"},
+            {"name": "Brown v. Board of Education", "citation": "347 U.S. 483", "year": 1954, "holding": "Separate educational facilities are inherently unequal"},
+            {"name": "Miranda v. Arizona", "citation": "384 U.S. 436", "year": 1966, "holding": "Fifth Amendment right against self-incrimination"},
+            {"name": "Roe v. Wade", "citation": "410 U.S. 113", "year": 1973, "holding": "Right to privacy under Due Process Clause"},
+            {"name": "Citizens United v. FEC", "citation": "558 U.S. 310", "year": 2010, "holding": "Corporate political spending is free speech"},
+            {"name": "SEC v. W.J. Howey Co.", "citation": "328 U.S. 293", "year": 1946, "holding": "Howey test for investment contracts"},
+            {"name": "Chevron U.S.A. v. NRDC", "citation": "467 U.S. 837", "year": 1984, "holding": "Chevron deference to agency interpretations"}
+        ]
+
+# Add to argument parser
+parser.add_argument("--case", help="Get case by name or citation")
+parser.add_argument("--search-cases", help="Search case law by keyword")
+parser.add_argument("--landmark-cases", action="store_true", help="List landmark cases")
+parser.add_argument("--court", help="Filter by court (scotus, ca1, ca2, etc.)")
+
+# Add to main
+elif args.case:
+    result = CaseLaw.get_case(args.case)
+    print(json.dumps(result, indent=2))
+elif args.search_cases:
+    results = CaseLaw.search_cases(args.search_cases, args.court)
+    print(json.dumps(results, indent=2))
+elif args.landmark_cases:
+    cases = CaseLaw.get_landmark_cases()
+    print("\n📜 LANDMARK CASES:")
+    print("=" * 60)
+    for c in cases:
+        print(f"\n{c['name']} ({c['year']})")
+        print(f"   Citation: {c['citation']}")
+        print(f"   Holding: {c['holding']}")
