@@ -73,7 +73,7 @@ class ModelRegistry:
                 {"name": "llama-3.3-70b-versatile", "speed": "fast", "best": "legal reasoning", "free": True},
                 {"name": "llama-3.1-8b-instant", "speed": "fastest", "best": "quick definitions", "free": True},
                 {"name": "mixtral-8x7b-32768", "speed": "fast", "best": "long documents", "free": True},
-                {"name": "gemma2-9b-it", "speed": "fast", "best": "general analysis", "free": True}
+                {"name": "gemma-9b-it", "speed": "fast", "best": "general analysis", "free": True}
             ]
         
         # Ollama (local, private)
@@ -159,11 +159,27 @@ class LegalAnalyzer:
     
     @staticmethod
     def _groq_analyze(question: str, model: str) -> str:
+        # Map friendly names to actual Groq model IDs
+        model_map = {
+            "llama-3.3-70b-versatile": "llama-3.3-70b-versatile",
+            "llama-3.1-8b-instant": "llama-3.1-8b-instant", 
+            "mixtral-8x7b-32768": "mixtral-8x7b-32768",
+            "gemma2-9b-it": "gemma2-9b-it",
+            "gemma-9b-it": "gemma2-9b-it",
+            "llama3.2:3b": "llama-3.1-8b-instant",  # fallback
+            "codellama:7b": "llama-3.1-8b-instant"  # fallback
+        }
+        
+        actual_model = model_map.get(model, "llama-3.3-70b-versatile")
+        
         try:
             from groq import Groq
             client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
+            
+            print(f"   Using Groq model: {actual_model}")
+            
             response = client.chat.completions.create(
-                model=model,
+                model=actual_model,
                 messages=[
                     {"role": "system", "content": "You are AgentForLaw, an expert in US law. Provide accurate, concise legal analysis based on statutes, regulations, and case law."},
                     {"role": "user", "content": question}
@@ -171,9 +187,26 @@ class LegalAnalyzer:
                 max_tokens=800,
                 temperature=0.3
             )
-            return f"[Groq/{model}]\n{response.choices[0].message.content}"
+            return f"[Groq/{actual_model}]\n{response.choices[0].message.content}"
         except Exception as e:
-            return f"Groq error: {e}"
+            # Fallback to a different model if first fails
+            try:
+                fallback_model = "llama-3.1-8b-instant"
+                print(f"   Retrying with fallback model: {fallback_model}")
+                from groq import Groq
+                client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
+                response = client.chat.completions.create(
+                    model=fallback_model,
+                    messages=[
+                        {"role": "system", "content": "You are AgentForLaw, a legal expert."},
+                        {"role": "user", "content": question}
+                    ],
+                    max_tokens=800,
+                    temperature=0.3
+                )
+                return f"[Groq/{fallback_model}]\n{response.choices[0].message.content}"
+            except Exception as e2:
+                return f"Groq error: {e}\nFallback also failed: {e2}"
     
     @staticmethod
     def _ollama_analyze(question: str, model: str) -> str:
@@ -597,3 +630,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+# Fix the _groq_analyze method with correct model names
+# Replace the existing _groq_analyze method
