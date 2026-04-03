@@ -16,8 +16,6 @@ SHARED_MEMORY_DIR.mkdir(exist_ok=True)
 DB_PATH = SHARED_MEMORY_DIR / "shared_memory.db"
 
 class SharedMemory:
-    """Connect to shared memory across all agents"""
-    
     def __init__(self):
         self.conn = sqlite3.connect(str(DB_PATH))
         self.cursor = self.conn.cursor()
@@ -75,136 +73,109 @@ class SharedMemory:
         self.conn.close()
 
 class AgentForLaw:
-    """AgentForLaw - understands law as a system of rules across all jurisdictions"""
-    
     def __init__(self):
         self.shared = SharedMemory()
         self.shared.register()
         
-        # FREE LAW RESOURCES
+        self.regulatory_agencies = {
+            "sec": {"name": "Securities and Exchange Commission", "url": "https://www.sec.gov/"},
+            "cftc": {"name": "Commodity Futures Trading Commission", "url": "https://www.cftc.gov/"},
+            "dttc": {"name": "Depository Trust & Clearing Corporation", "url": "https://www.dtcc.com/"},
+            "finra": {"name": "FINRA", "url": "https://www.finra.org/"},
+            "federal_reserve": {"name": "Federal Reserve", "url": "https://www.federalreserve.gov/"},
+            "fdic": {"name": "FDIC", "url": "https://www.fdic.gov/"},
+            "occ": {"name": "OCC", "url": "https://www.occ.treas.gov/"},
+            "irs": {"name": "IRS", "url": "https://www.irs.gov/"},
+            "treasury": {"name": "US Treasury", "url": "https://home.treasury.gov/"},
+            "fincen": {"name": "FinCEN", "url": "https://www.fincen.gov/"},
+            "ofac": {"name": "OFAC", "url": "https://ofac.treasury.gov/"},
+            "cfpb": {"name": "CFPB", "url": "https://www.consumerfinance.gov/"},
+            "ftc": {"name": "FTC", "url": "https://www.ftc.gov/"},
+            "fatf": {"name": "FATF", "url": "https://www.fatf-gafi.org/"},
+            "iosco": {"name": "IOSCO", "url": "https://www.iosco.org/"}
+        }
+        
         self.free_law_resources = {
-            "supreme_court": {
-                "name": "US Supreme Court",
-                "url": "https://www.supremecourt.gov/opinions/opinions.aspx",
-                "cases": "https://www.oyez.org/"
-            },
-            "court_listener": {
-                "name": "CourtListener - Free case law",
-                "url": "https://www.courtlistener.com/",
-                "search": "https://www.courtlistener.com/search/"
-            },
-            "google_scholar": {
-                "name": "Google Scholar - Legal Opinions",
-                "url": "https://scholar.google.com/scholar",
-                "cases": "https://scholar.google.com/intl/en/scholar/legal.html"
-            },
-            "justia": {
-                "name": "Justia - Free Law",
-                "url": "https://law.justia.com/",
-                "constitution": "https://law.justia.com/constitution/us/"
-            },
-            "cornell_law": {
-                "name": "Cornell LII",
-                "url": "https://www.law.cornell.edu/",
-                "constitution": "https://www.law.cornell.edu/constitution"
-            }
+            "court_listener": {"name": "CourtListener", "url": "https://www.courtlistener.com/"},
+            "google_scholar": {"name": "Google Scholar", "url": "https://scholar.google.com/"},
+            "justia": {"name": "Justia", "url": "https://law.justia.com/"},
+            "cornell": {"name": "Cornell LII", "url": "https://www.law.cornell.edu/"}
         }
         
         self.constitution_resources = {
             "archives": "https://www.archives.gov/founding-docs/constitution",
             "congress": "https://constitution.congress.gov/",
-            "cornell": "https://www.law.cornell.edu/constitution",
-            "justia": "https://law.justia.com/constitution/us/"
+            "cornell": "https://www.law.cornell.edu/constitution"
         }
         
         self.domains = {
-            "constitutional": "Constitution, fundamental law, bill of rights",
-            "statutory": "written laws passed by legislatures",
-            "regulatory": "agency rules and regulations",
-            "common_law": "judge-made law from precedent",
-            "contract": "agreements and obligations",
-            "criminal": "crimes and punishments",
-            "international": "treaties and customary law"
-        }
-        
-        self.constitutional_principles = {
-            "due_process": "5th and 14th Amendments",
-            "equal_protection": "14th Amendment",
-            "free_speech": "1st Amendment",
-            "separation_of_powers": "Legislative, Executive, Judicial branches"
+            "constitutional": "Constitution, fundamental law",
+            "statutory": "Written laws",
+            "regulatory": "Agency rules",
+            "common_law": "Case law precedent",
+            "securities": "SEC, FINRA rules",
+            "banking": "Federal Reserve, FDIC, OCC",
+            "tax": "IRS code",
+            "aml": "FinCEN, FATF"
         }
     
-    def get_law_resources(self, category: str = None) -> Dict:
-        if category == "cases":
-            return self.free_law_resources
-        elif category == "constitution":
-            return self.constitution_resources
-        else:
-            return {"cases": self.free_law_resources, "constitution": self.constitution_resources}
+    def get_agency(self, name: str) -> Dict:
+        return self.regulatory_agencies.get(name.lower(), {"error": "Agency not found"})
     
-    def search_case_law(self, query: str) -> List[Dict]:
-        return [
-            {"source": "CourtListener", "url": f"https://www.courtlistener.com/search/?q={query.replace(' ', '+')}"},
-            {"source": "Google Scholar", "url": f"https://scholar.google.com/scholar?q={query.replace(' ', '+')}"},
-            {"source": "Justia", "url": f"https://law.justia.com/cases/?q={query.replace(' ', '+')}"}
-        ]
+    def get_all_agencies(self) -> List[str]:
+        return list(self.regulatory_agencies.keys())
+    
+    def search_cases(self, query: str) -> List[Dict]:
+        return [{"source": "CourtListener", "url": f"https://www.courtlistener.com/search/?q={query.replace(' ', '+')}"}]
     
     def get_constitution(self) -> Dict:
         return self.constitution_resources
-    
-    def get_constitutional_principle(self, principle: str) -> Dict:
-        if principle in self.constitutional_principles:
-            return {"principle": principle, "description": self.constitutional_principles[principle]}
-        return {"error": f"Principle '{principle}' not found"}
 
 def main():
     import argparse
-    parser = argparse.ArgumentParser(description="agentforlaw - Studies law")
-    parser.add_argument("--domains", action="store_true", help="List law domains")
-    parser.add_argument("--resources", help="Show law resources (cases, constitution)")
+    parser = argparse.ArgumentParser(description="agentforlaw")
+    parser.add_argument("--agencies", action="store_true", help="List agencies")
+    parser.add_argument("--agency", help="Get agency info")
     parser.add_argument("--search-cases", help="Search case law")
-    parser.add_argument("--constitution", action="store_true", help="Get constitution resources")
-    parser.add_argument("--principle", help="Get constitutional principle")
-    parser.add_argument("--recall", help="Recall memories from all agents")
-    parser.add_argument("--remember", nargs=2, metavar=('KEY', 'VALUE'), help="Store a memory")
+    parser.add_argument("--constitution", action="store_true", help="Get constitution")
+    parser.add_argument("--domains", action="store_true", help="List domains")
+    parser.add_argument("--remember", nargs=2, metavar=('KEY', 'VALUE'), help="Store memory")
+    parser.add_argument("--recall", help="Recall memory")
     parser.add_argument("--agents", action="store_true", help="Show other agents")
     
     args = parser.parse_args()
     agent = AgentForLaw()
     
-    if args.domains:
+    if args.agencies:
+        print("\nRegulatory Agencies:")
+        for a in agent.get_all_agencies():
+            print(f"  {a.upper()}")
+    elif args.agency:
+        print(json.dumps(agent.get_agency(args.agency), indent=2))
+    elif args.search_cases:
+        print(json.dumps(agent.search_cases(args.search_cases), indent=2))
+    elif args.constitution:
+        print(json.dumps(agent.get_constitution(), indent=2))
+    elif args.domains:
         print("\nLaw Domains:")
         for d, desc in agent.domains.items():
             print(f"  {d}: {desc}")
-    elif args.resources:
-        result = agent.get_law_resources(args.resources)
-        print(json.dumps(result, indent=2))
-    elif args.search_cases:
-        results = agent.search_case_law(args.search_cases)
-        print(json.dumps(results, indent=2))
-    elif args.constitution:
-        result = agent.get_constitution()
-        print(json.dumps(result, indent=2))
-    elif args.principle:
-        result = agent.get_constitutional_principle(args.principle)
-        print(json.dumps(result, indent=2))
-    elif args.agents:
-        agents = agent.shared.get_other_agents()
-        print("\n🦞 Other Agents in Ecosystem:")
-        for name, caps in agents:
-            print(f"  {name}: {caps[:60]}...")
+    elif args.remember:
+        agent.shared.remember(args.remember[0], args.remember[1])
+        print(f"✅ Memory stored: {args.remember[0]}")
     elif args.recall:
         results = agent.shared.recall(args.recall)
         if results:
-            print(f"\n📖 Memories matching '{args.recall}':")
-            for ag, key, value, tags in results:
-                print(f"\n🦞 {ag}: {key}")
-                print(f"   {value[:200]}...")
+            for r in results:
+                print(f"\n🦞 {r[0]}: {r[1]}")
+                print(f"   {r[2][:200]}...")
         else:
-            print(f"No memories found for '{args.recall}'")
-    elif args.remember:
-        agent.shared.remember(args.remember[0], args.remember[1])
-        print(f"✅ Memory stored: {args.remember[0]} = {args.remember[1]}")
+            print("No memories found")
+    elif args.agents:
+        agents = agent.shared.get_other_agents()
+        print("\nOther Agents:")
+        for name, caps in agents:
+            print(f"  {name}: {caps[:60]}...")
     else:
         parser.print_help()
     
@@ -212,159 +183,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-        # REGULATORY AGENCIES
-        self.regulatory_agencies = {
-            # Securities & Finance
-            "sec": {
-                "name": "Securities and Exchange Commission",
-                "url": "https://www.sec.gov/",
-                "edgar": "https://www.sec.gov/edgar",
-                "rules": "https://www.sec.gov/rules-regulations",
-                "enforcement": "https://www.sec.gov/enforcement",
-                "crypto": "https://www.sec.gov/crypto"
-            },
-            "cftc": {
-                "name": "Commodity Futures Trading Commission",
-                "url": "https://www.cftc.gov/",
-                "rules": "https://www.cftc.gov/LawRegulation/index.htm",
-                "enforcement": "https://www.cftc.gov/Enforcement/index.htm",
-                "digital_assets": "https://www.cftc.gov/digitalassets"
-            },
-            "dttc": {
-                "name": "Depository Trust & Clearing Corporation",
-                "url": "https://www.dtcc.com/",
-                "legal": "https://www.dtcc.com/legal",
-                "rules": "https://www.dtcc.com/rules"
-            },
-            "finra": {
-                "name": "Financial Industry Regulatory Authority",
-                "url": "https://www.finra.org/",
-                "rules": "https://www.finra.org/rules-guidance",
-                "arbitration": "https://www.finra.org/arbitration-mediation"
-            },
-            "federal_reserve": {
-                "name": "Federal Reserve System",
-                "url": "https://www.federalreserve.gov/",
-                "regulations": "https://www.federalreserve.gov/supervisionreg/reglisting.htm",
-                "banking": "https://www.federalreserve.gov/banking.htm"
-            },
-            "fdic": {
-                "name": "Federal Deposit Insurance Corporation",
-                "url": "https://www.fdic.gov/",
-                "regulations": "https://www.fdic.gov/regulations",
-                "laws": "https://www.fdic.gov/regulations/laws"
-            },
-            "occ": {
-                "name": "Office of the Comptroller of the Currency",
-                "url": "https://www.occ.treas.gov/",
-                "regulations": "https://www.occ.treas.gov/topics/supervision-and-examination/index-supervision.html"
-            },
-            
-            # Market & Trading
-            "cme": {
-                "name": "CME Group",
-                "url": "https://www.cmegroup.com/",
-                "rules": "https://www.cmegroup.com/rulebook",
-                "market_regulation": "https://www.cmegroup.com/market-regulation"
-            },
-            "ice": {
-                "name": "Intercontinental Exchange",
-                "url": "https://www.theice.com/",
-                "rules": "https://www.theice.com/regulation"
-            },
-            
-            # Treasury & Tax
-            "irs": {
-                "name": "Internal Revenue Service",
-                "url": "https://www.irs.gov/",
-                "tax_code": "https://www.irs.gov/tax-professionals/tax-code-regulations-and-official-guidance",
-                "crypto": "https://www.irs.gov/businesses/small-businesses-self-employed/virtual-currencies"
-            },
-            "treasury": {
-                "name": "US Department of Treasury",
-                "url": "https://home.treasury.gov/",
-                "ofac": "https://ofac.treasury.gov/",
-                "sanctions": "https://sanctionssearch.ofac.treas.gov/"
-            },
-            
-            # Anti-Money Laundering
-            "fincen": {
-                "name": "Financial Crimes Enforcement Network",
-                "url": "https://www.fincen.gov/",
-                "regulations": "https://www.fincen.gov/resources/statutes-regulations",
-                "crypto_guidance": "https://www.fincen.gov/virtual-currency"
-            },
-            
-            # Banking
-            "oCC": {
-                "name": "Office of the Comptroller of the Currency",
-                "url": "https://www.occ.treas.gov/",
-                "interpretations": "https://www.occ.treas.gov/topics/supervision-and-examination/index-supervision.html"
-            },
-            
-            # Consumer Protection
-            "cfpb": {
-                "name": "Consumer Financial Protection Bureau",
-                "url": "https://www.consumerfinance.gov/",
-                "rules": "https://www.consumerfinance.gov/rules-policy",
-                "enforcement": "https://www.consumerfinance.gov/enforcement"
-            },
-            "ftc": {
-                "name": "Federal Trade Commission",
-                "url": "https://www.ftc.gov/",
-                "rules": "https://www.ftc.gov/legal-library/browse/rules",
-                "privacy": "https://www.ftc.gov/privacy-security"
-            },
-            
-            # Blockchain & Crypto Specific
-            "ofac": {
-                "name": "Office of Foreign Assets Control",
-                "url": "https://ofac.treasury.gov/",
-                "sanctions_list": "https://ofac.treasury.gov/specially-designated-nationals-list-sdn-list",
-                "crypto_sanctions": "https://ofac.treasury.gov/cryptocurrency"
-            },
-            "fincen_crypto": {
-                "name": "FinCEN Virtual Currency Guidance",
-                "url": "https://www.fincen.gov/virtual-currency",
-                "travel_rule": "https://www.fincen.gov/travel-rule",
-                "bsa": "https://www.fincen.gov/bsa"
-            },
-            
-            # International
-            "iosco": {
-                "name": "International Organization of Securities Commissions",
-                "url": "https://www.iosco.org/",
-                "crypto": "https://www.iosco.org/crypto"
-            },
-            "fatf": {
-                "name": "Financial Action Task Force",
-                "url": "https://www.fatf-gafi.org/",
-                "virtual_assets": "https://www.fatf-gafi.org/topics/virtual-assets/"
-            }
-        }
-        
-        # Add method to get agency info
-    def get_agency(self, agency_name: str) -> Dict:
-        """Get information about a regulatory agency"""
-        agency = self.regulatory_agencies.get(agency_name.lower())
-        if agency:
-            return agency
-        return {"error": f"Agency '{agency_name}' not found", "available": list(self.regulatory_agencies.keys())}
-    
-    def get_all_agencies(self) -> List[str]:
-        """List all regulatory agencies"""
-        return list(self.regulatory_agencies.keys())
-
-    elif args.agencies:
-        agencies = agent.get_all_agencies()
-        print("\n📋 Regulatory Agencies:")
-        for a in sorted(agencies):
-            print(f"  {a.upper()}")
-    elif args.agency:
-        result = agent.get_agency(args.agency)
-        print(json.dumps(result, indent=2))
-
-# Add to argument parser
-parser.add_argument("--agencies", action="store_true", help="List all regulatory agencies")
-parser.add_argument("--agency", help="Get information about a specific agency (SEC, CFTC, DTTC, etc.)")
