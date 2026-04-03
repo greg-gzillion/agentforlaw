@@ -456,3 +456,198 @@ elif args.landmark_cases:
         print(f"\n{c['name']} ({c['year']})")
         print(f"   Citation: {c['citation']}")
         print(f"   Holding: {c['holding']}")
+
+class USLawResources:
+    """Complete US law resources - case law, statutes, regulations, dictionaries"""
+    
+    # Primary law sources
+    PRIMARY_SOURCES = {
+        "us_constitution": {
+            "url": "https://constitution.congress.gov/",
+            "annotated": "https://www.law.cornell.edu/constitution-conan",
+            "full_text": "https://www.archives.gov/founding-docs/constitution-transcript"
+        },
+        "us_code": {
+            "url": "https://uscode.house.gov/",
+            "cornell": "https://www.law.cornell.edu/uscode/text",
+            "govinfo": "https://www.govinfo.gov/app/collection/uscode"
+        },
+        "code_of_federal_regulations": {
+            "url": "https://www.ecfr.gov/",
+            "cornell": "https://www.law.cornell.edu/cfr/text"
+        },
+        "federal_rules": {
+            "civil_procedure": "https://www.law.cornell.edu/rules/frcp",
+            "criminal_procedure": "https://www.law.cornell.edu/rules/frcrmp",
+            "evidence": "https://www.law.cornell.edu/rules/fre",
+            "appellate": "https://www.law.cornell.edu/rules/frap"
+        }
+    }
+    
+    # Case law sources
+    CASE_Law_SOURCES = {
+        "supreme_court": {
+            "official": "https://www.supremecourt.gov/opinions/opinions.aspx",
+            "oyez": "https://www.oyez.org/",
+            "cornell": "https://www.law.cornell.edu/supremecourt/",
+            "justia": "https://supreme.justia.com/",
+            "scotusblog": "https://www.scotusblog.com/"
+        },
+        "federal_courts": {
+            "courtlistener": "https://www.courtlistener.com/",
+            "google_scholar": "https://scholar.google.com/",
+            "findlaw": "https://caselaw.findlaw.com/",
+            "justia": "https://law.justia.com/cases/federal/",
+            "open_case_law": "https://open.case.law/",
+            "harvard_case_law": "https://case.law/"
+        },
+        "state_courts": {
+            "cornell_states": "https://www.law.cornell.edu/states/",
+            "justia_states": "https://law.justia.com/cases/",
+            "findlaw_states": "https://caselaw.findlaw.com/court"
+        }
+    }
+    
+    # Legal dictionaries
+    LAW_DICTIONARIES = {
+        "blacks_law_dictionary": {
+            "name": "Black's Law Dictionary",
+            "url": "https://thelawdictionary.org/",
+            "cornell": "https://www.law.cornell.edu/wex",
+            "alternative": "https://dictionary.law.com/"
+        },
+        "law_dictionary": {
+            "name": "Law Dictionary",
+            "url": "https://dictionary.law.com/",
+            "merriam_webster_law": "https://www.merriam-webster.com/law"
+        }
+    }
+    
+    # Secondary sources
+    SECONDARY_SOURCES = {
+        "restatements": {
+            "name": "Restatements of Law",
+            "ali": "https://www.ali.org/publications/restatements-law/"
+        },
+        "law_reviews": {
+            "harvard_law_review": "https://harvardlawreview.org/",
+            "yale_law_journal": "https://www.yalelawjournal.org/",
+            "columbia_law_review": "https://columbialawreview.org/"
+        },
+        "treatises": {
+            "cornell_lii": "https://www.law.cornell.edu/wex",
+            "legal_information_institute": "https://www.law.cornell.edu/"
+        }
+    }
+    
+    # Subject-specific law
+    SUBJECT_LAW = {
+        "constitutional_law": {
+            "cornell": "https://www.law.cornell.edu/constitution",
+            "justia": "https://law.justia.com/constitution/us/",
+            "congress": "https://constitution.congress.gov/"
+        },
+        "criminal_law": {
+            "us_code_title_18": "https://www.law.cornell.edu/uscode/text/18",
+            "federal_rules_criminal": "https://www.law.cornell.edu/rules/frcrmp",
+            "justia_criminal": "https://law.justia.com/criminal/"
+        },
+        "civil_law": {
+            "federal_rules_civil": "https://www.law.cornell.edu/rules/frcp",
+            "cornell_civil": "https://www.law.cornell.edu/wex/civil_law"
+        },
+        "contract_law": {
+            "cornell_contracts": "https://www.law.cornell.edu/wex/contract",
+            "uniform_commercial_code": "https://www.law.cornell.edu/ucc",
+            "restatement_contracts": "https://www.ali.org/publications/restatement-law-second-contracts/"
+        },
+        "tort_law": {
+            "cornell_torts": "https://www.law.cornell.edu/wex/tort",
+            "restatement_torts": "https://www.ali.org/publications/restatement-law-second-torts/",
+            "justia_torts": "https://law.justia.com/injury/"
+        },
+        "property_law": {
+            "cornell_property": "https://www.law.cornell.edu/wex/property",
+            "justia_property": "https://law.justia.com/property/"
+        },
+        "evidence_law": {
+            "federal_rules_evidence": "https://www.law.cornell.edu/rules/fre",
+            "cornell_evidence": "https://www.law.cornell.edu/wex/evidence"
+        },
+        "civil_procedure": {
+            "federal_rules_civil_procedure": "https://www.law.cornell.edu/rules/frcp",
+            "cornell_civil_procedure": "https://www.law.cornell.edu/wex/civil_procedure"
+        },
+        "criminal_procedure": {
+            "federal_rules_criminal_procedure": "https://www.law.cornell.edu/rules/frcrmp",
+            "cornell_criminal_procedure": "https://www.law.cornell.edu/wex/criminal_procedure"
+        }
+    }
+    
+    @staticmethod
+    def get_primary_source(name: str) -> Dict:
+        """Get primary law source URL"""
+        return USLawResources.PRIMARY_SOURCES.get(name, {"error": "Not found"})
+    
+    @staticmethod
+    def get_case_source(name: str) -> Dict:
+        """Get case law source URL"""
+        return USLawResources.CASE_Law_SOURCES.get(name, {"error": "Not found"})
+    
+    @staticmethod
+    def get_law_dictionary(name: str = "blacks_law_dictionary") -> Dict:
+        """Get law dictionary URL"""
+        return USLawResources.LAW_DICTIONARIES.get(name, USLawResources.LAW_DICTIONARIES["blacks_law_dictionary"])
+    
+    @staticmethod
+    def get_subject_law(subject: str) -> Dict:
+        """Get subject-specific law resources"""
+        return USLawResources.SUBJECT_LAW.get(subject, {"error": f"Subject '{subject}' not found"})
+    
+    @staticmethod
+    def list_subjects() -> List[str]:
+        """List all available law subjects"""
+        return list(USLawResources.SUBJECT_LAW.keys())
+    
+    @staticmethod
+    def blacks_dictionary_term(term: str) -> str:
+        """Search Black's Law Dictionary for a term"""
+        return f"https://thelawdictionary.org/?s={term.replace(' ', '+')}"
+    
+    @staticmethod
+    def wex_definition(term: str) -> str:
+        """Search Cornell WEX legal dictionary"""
+        return f"https://www.law.cornell.edu/wex/{term.replace(' ', '_')}"
+
+# Add to argument parser
+parser.add_argument("--primary-source", help="Get primary law source (us_constitution, us_code, code_of_federal_regulations)")
+parser.add_argument("--case-source", help="Get case law source (supreme_court, federal_courts, state_courts)")
+parser.add_argument("--dictionary", help="Get law dictionary (blacks_law_dictionary)")
+parser.add_argument("--define", help="Define a law term using Black's Law Dictionary")
+parser.add_argument("--subject", help="Get subject-specific law (constitutional_law, criminal_law, contract_law, tort_law, etc.)")
+parser.add_argument("--list-subjects", action="store_true", help="List all law subjects")
+
+# Add to main
+elif args.primary_source:
+    result = USLawResources.get_primary_source(args.primary_source)
+    print(json.dumps(result, indent=2))
+elif args.case_source:
+    result = USLawResources.get_case_source(args.case_source)
+    print(json.dumps(result, indent=2))
+elif args.dictionary:
+    result = USLawResources.get_law_dictionary(args.dictionary)
+    print(json.dumps(result, indent=2))
+elif args.define:
+    url = USLawResources.blacks_dictionary_term(args.define)
+    wex_url = USLawResources.wex_definition(args.define)
+    print(f"\n📖 BLACK'S LAW DICTIONARY - '{args.define}'")
+    print(f"   Search: {url}")
+    print(f"   WEX Definition: {wex_url}")
+elif args.subject:
+    result = USLawResources.get_subject_law(args.subject)
+    print(json.dumps(result, indent=2))
+elif args.list_subjects:
+    subjects = USLawResources.list_subjects()
+    print("\n📚 LAW SUBJECTS:")
+    for s in subjects:
+        print(f"  • {s.replace('_', ' ').title()}")
