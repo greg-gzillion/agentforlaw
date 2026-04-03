@@ -3,7 +3,6 @@
 agentforlaw - Agent of Law
 Studies and applies LAW (statutes, codes, regulations, constitutions, case law)
 Drafts documents USING law (contracts, wills, trusts, estate documents)
-Does NOT practice law. Does NOT give legal advice.
 """
 
 import json
@@ -14,7 +13,6 @@ from datetime import datetime
 from pathlib import Path
 from typing import List, Dict
 
-# Shared memory path
 SHARED_MEMORY_DIR = Path.home() / ".claw_memory"
 SHARED_MEMORY_DIR.mkdir(exist_ok=True)
 DB_PATH = SHARED_MEMORY_DIR / "shared_memory.db"
@@ -50,121 +48,192 @@ class SharedMemory:
         self.conn.close()
 
 class LawDocumentDrafting:
-    """Draft documents USING law - contracts, wills, trusts, estates"""
-    
     @staticmethod
     def draft_contract(contract_type: str, parties: Dict, terms: Dict) -> str:
-        templates = {
-            "service": {"title": "SERVICE CONTRACT", "clauses": ["PARTIES: {party_a} and {party_b}", "SERVICES: {services}", "PAYMENT: {payment}", "GOVERNING LAW: {governing_law}"]},
-            "sale": {"title": "SALES CONTRACT", "clauses": ["SELLER: {seller} BUYER: {buyer}", "GOODS: {goods}", "PRICE: {price}", "GOVERNING LAW: UCC Article 2"]},
-            "employment": {"title": "EMPLOYMENT CONTRACT", "clauses": ["EMPLOYER: {employer} EMPLOYEE: {employee}", "POSITION: {position}", "SALARY: {salary}", "GOVERNING LAW: {governing_law}"]},
-            "lease": {"title": "LEASE CONTRACT", "clauses": ["LANDLORD: {landlord} TENANT: {tenant}", "PREMISES: {premises}", "RENT: {rent}", "TERM: {term}", "GOVERNING LAW: {governing_law}"]},
-            "partnership": {"title": "PARTNERSHIP AGREEMENT", "clauses": ["PARTNERS: {partner_a} and {partner_b}", "PURPOSE: {purpose}", "PROFIT SHARING: {sharing}", "GOVERNING LAW: {governing_law}"]},
-            "loan": {"title": "LOAN AGREEMENT", "clauses": ["LENDER: {lender} BORROWER: {borrower}", "PRINCIPAL: {principal}", "INTEREST: {interest}%", "REPAYMENT: {repayment}", "GOVERNING LAW: {governing_law}"]}
+        """Draft a contract with safe parameter handling"""
+        
+        # Default values for missing parameters
+        defaults = {
+            'governing_law': 'Delaware',
+            'services': 'services described in Exhibit A',
+            'payment': '$0',
+            'goods': 'goods described in Exhibit A',
+            'price': '$0',
+            'position': 'position described in offer letter',
+            'salary': 'to be determined',
+            'premises': 'property described in Exhibit A',
+            'rent': '$0',
+            'term': 'one year',
+            'purpose': 'business purposes',
+            'sharing': 'as agreed by partners',
+            'principal': '$0',
+            'interest': '0',
+            'repayment': 'on demand'
         }
+        
+        # Apply defaults for missing terms
+        for key, default in defaults.items():
+            if key not in terms:
+                terms[key] = default
+        
+        templates = {
+            "service": {"title": "SERVICE CONTRACT", "clauses": [
+                "PARTIES: {party_a} and {party_b}",
+                "SERVICES: {services}",
+                "PAYMENT: {payment}",
+                "GOVERNING LAW: {governing_law}"
+            ]},
+            "sale": {"title": "SALES CONTRACT", "clauses": [
+                "SELLER: {seller} BUYER: {buyer}",
+                "GOODS: {goods}",
+                "PRICE: {price}",
+                "GOVERNING LAW: {governing_law}"
+            ]},
+            "employment": {"title": "EMPLOYMENT CONTRACT", "clauses": [
+                "EMPLOYER: {employer} EMPLOYEE: {employee}",
+                "POSITION: {position}",
+                "SALARY: {salary}",
+                "GOVERNING LAW: {governing_law}"
+            ]},
+            "lease": {"title": "LEASE CONTRACT", "clauses": [
+                "LANDLORD: {landlord} TENANT: {tenant}",
+                "PREMISES: {premises}",
+                "RENT: {rent}",
+                "TERM: {term}",
+                "GOVERNING LAW: {governing_law}"
+            ]},
+            "partnership": {"title": "PARTNERSHIP AGREEMENT", "clauses": [
+                "PARTNERS: {partner_a} and {partner_b}",
+                "PURPOSE: {purpose}",
+                "PROFIT SHARING: {sharing}",
+                "GOVERNING LAW: {governing_law}"
+            ]},
+            "loan": {"title": "LOAN AGREEMENT", "clauses": [
+                "LENDER: {lender} BORROWER: {borrower}",
+                "PRINCIPAL: {principal}",
+                "INTEREST: {interest}%",
+                "REPAYMENT: {repayment}",
+                "GOVERNING LAW: {governing_law}"
+            ]}
+        }
+        
         t = templates.get(contract_type, templates["service"])
         result = f"\n{'='*60}\n{t['title']}\n{'='*60}\n\n"
+        
+        # Merge parties and terms for formatting
+        format_dict = {**parties, **terms}
+        
         for clause in t['clauses']:
-            result += f"{clause.format(**parties, **terms)}\n\n"
+            try:
+                result += f"{clause.format(**format_dict)}\n\n"
+            except KeyError as e:
+                result += f"{clause.replace(str(e), '______')}\n\n"
+        
         result += f"\nDate: {datetime.now().strftime('%B %d, %Y')}\n"
-        result += f"{parties.get('party_a', 'First Party')}: ___________________\n"
-        result += f"{parties.get('party_b', 'Second Party')}: ___________________\n{'='*60}\n"
+        result += f"{parties.get('party_a', parties.get('seller', parties.get('employer', parties.get('landlord', parties.get('partner_a', parties.get('lender', 'First Party'))))))}: ___________________\n"
+        result += f"{parties.get('party_b', parties.get('buyer', parties.get('employee', parties.get('tenant', parties.get('partner_b', parties.get('borrower', 'Second Party'))))))}: ___________________\n"
+        result += f"{'='*60}\n"
         return result
     
     @staticmethod
     def draft_will(parties: Dict, provisions: Dict) -> str:
         date = datetime.now().strftime("%B %d, %Y")
+        name = parties.get('name', '_________')
+        executor = provisions.get('executor', '_________')
+        beneficiary = provisions.get('beneficiary', '_________')
+        state = provisions.get('governing_state', '_________')
+        
         return f"""
 {'='*60}
-LAST WILL AND TESTAMENT OF {parties.get('name', '_________')}
+LAST WILL AND TESTAMENT OF {name}
 {'='*60}
 
-I, {parties.get('name', '_________')}, being of sound mind, declare this to be my Will.
+I, {name}, being of sound mind, declare this to be my Will.
 
 ARTICLE I: EXECUTOR
-I appoint {provisions.get('executor', '_________')} as Executor.
+I appoint {executor} as Executor.
 
 ARTICLE II: DISPOSITION
-I give my entire estate to {provisions.get('beneficiary', '_________')}.
+I give my entire estate to {beneficiary}.
 
 ARTICLE III: GOVERNING LAW
-This Will is governed by the laws of {provisions.get('governing_state', '_________')}.
+This Will is governed by the laws of {state}.
 
 IN WITNESS WHEREOF, I sign this Will on {date}.
 
-{parties.get('name', '_________')} (Testator)
+{name} (Testator)
 Witness 1: _________    Witness 2: _________
 {'='*60}"""
     
     @staticmethod
     def draft_trust(parties: Dict, provisions: Dict) -> str:
         date = datetime.now().strftime("%B %d, %Y")
+        name = parties.get('name', '_________')
+        trustee = provisions.get('trustee', '_________')
+        beneficiaries = provisions.get('beneficiaries', '_________')
+        state = provisions.get('governing_state', '_________')
+        
         return f"""
 {'='*60}
-REVOCABLE LIVING TRUST OF {parties.get('name', '_________')}
+REVOCABLE LIVING TRUST OF {name}
 {'='*60}
 
-Settlor: {parties.get('name', '_________')}
-Trustee: {provisions.get('trustee', '_________')}
-Beneficiaries: {provisions.get('beneficiaries', '_________')}
+Settlor: {name}
+Trustee: {trustee}
+Beneficiaries: {beneficiaries}
 
 The Settlor transfers property to the Trustee to hold for the beneficiaries.
 
-Governing Law: {provisions.get('governing_state', '_________')}
+Governing Law: {state}
 
 IN WITNESS WHEREOF, executed on {date}.
 
-{parties.get('name', '_________')} (Settlor)
-{provisions.get('trustee', '_________')} (Trustee)
+{name} (Settlor)
+{trustee} (Trustee)
 {'='*60}"""
     
     @staticmethod
     def draft_estate_document(doc_type: str, parties: Dict, provisions: Dict) -> str:
         date = datetime.now().strftime("%B %d, %Y")
+        
         if doc_type == "power_of_attorney":
+            principal = parties.get('principal', '_________')
+            agent = provisions.get('agent', '_________')
             return f"""
 {'='*60}
 DURABLE POWER OF ATTORNEY
 {'='*60}
-I, {parties.get('principal', '_________')}, appoint {provisions.get('agent', '_________')} as my Attorney-in-Fact.
+I, {principal}, appoint {agent} as my Attorney-in-Fact.
 This Power of Attorney is durable and remains effective upon my disability.
 Executed on {date}.
-{parties.get('principal', '_________')} (Principal)
+{principal} (Principal)
 Notary: _________"""
+        
         elif doc_type == "healthcare_directive":
+            principal = parties.get('principal', '_________')
+            agent = provisions.get('agent', '_________')
             return f"""
 {'='*60}
 ADVANCE HEALTH CARE DIRECTIVE
 {'='*60}
-I, {parties.get('principal', '_________')}, appoint {provisions.get('agent', '_________')} as my Health Care Agent.
+I, {principal}, appoint {agent} as my Health Care Agent.
 My Agent may make all health care decisions for me.
 Executed on {date}.
-{parties.get('principal', '_________')} (Principal)
+{principal} (Principal)
 Witness: _________"""
+        
         elif doc_type == "living_will":
+            declarant = parties.get('declarant', '_________')
             return f"""
 {'='*60}
 LIVING WILL
 {'='*60}
-I, {parties.get('declarant', '_________')}, direct that life-sustaining treatment be withheld if I have a terminal condition.
+I, {declarant}, direct that life-sustaining treatment be withheld if I have a terminal condition.
 Executed on {date}.
-{parties.get('declarant', '_________')} (Declarant)
+{declarant} (Declarant)
 Witnesses: _________"""
+        
         return "Unknown document type"
-
-class USCourts:
-    @staticmethod
-    def get_federal_court(court_name: str) -> Dict:
-        courts = {
-            "supreme_court": {"name": "US Supreme Court", "url": "https://www.supremecourt.gov/"},
-            "ninth_circuit": {"name": "9th Circuit", "url": "https://www.ca9.uscourts.gov/"},
-            "second_circuit": {"name": "2nd Circuit", "url": "https://www.ca2.uscourts.gov/"}
-        }
-        return courts.get(court_name, {"error": "Not found"})
-    
-    @staticmethod
-    def get_state_court(state: str, court_type: str = "supreme") -> Dict:
-        return {"state": state, "court_type": court_type, "url": f"https://www.courts.{state}.gov/"}
 
 class LawRetriever:
     @staticmethod
@@ -195,21 +264,14 @@ def main():
     import argparse
     parser = argparse.ArgumentParser(description="agentforlaw - Agent of Law")
     
-    # Info commands
     parser.add_argument("--agencies", action="store_true", help="List agencies")
     parser.add_argument("--agency", help="Get agency info")
     parser.add_argument("--domains", action="store_true", help="List law domains")
-    
-    # Memory commands
     parser.add_argument("--remember", nargs=2, metavar=('KEY', 'VALUE'), help="Store in shared memory")
     parser.add_argument("--recall", help="Recall from shared memory")
     parser.add_argument("--agents", action="store_true", help="Show other agents")
-    
-    # Research commands
     parser.add_argument("--statute", help="Get statute URL")
     parser.add_argument("--case", help="Get case by name")
-    
-    # Drafting commands
     parser.add_argument("--draft-contract", choices=["service", "sale", "employment", "lease", "partnership", "loan"], help="Draft a contract")
     parser.add_argument("--draft-will", action="store_true", help="Draft a last will and testament")
     parser.add_argument("--draft-trust", action="store_true", help="Draft a revocable living trust")
@@ -217,14 +279,9 @@ def main():
     parser.add_argument("--parties", help="JSON string of party information")
     parser.add_argument("--provisions", help="JSON string of provisions")
     
-    # Court commands
-    parser.add_argument("--federal-court", help="Get federal court")
-    parser.add_argument("--state-court", nargs=2, metavar=('STATE', 'TYPE'), help="Get state court")
-    
     args = parser.parse_args()
     agent = AgentForLaw()
     
-    # Info commands
     if args.agencies:
         print("\nAgencies:")
         for a in agent.get_all_agencies():
@@ -235,8 +292,6 @@ def main():
         print("\nLaw Domains:")
         for d, desc in agent.domains.items():
             print(f"  {d}: {desc}")
-    
-    # Memory commands
     elif args.remember:
         agent.shared.remember(args.remember[0], args.remember[1])
         print(f"✅ Memory stored: {args.remember[0]}")
@@ -252,14 +307,10 @@ def main():
         print("\nOther Agents:")
         for name, caps in others:
             print(f"  {name}: {caps[:60]}...")
-    
-    # Research commands
     elif args.statute:
         print(json.dumps(LawRetriever.get_statute(args.statute), indent=2))
     elif args.case:
         print(json.dumps(LawRetriever.get_case(args.case), indent=2))
-    
-    # Drafting commands
     elif args.draft_contract:
         parties = json.loads(args.parties) if args.parties else {}
         provisions = json.loads(args.provisions) if args.provisions else {}
@@ -276,14 +327,6 @@ def main():
         parties = json.loads(args.parties) if args.parties else {}
         provisions = json.loads(args.provisions) if args.provisions else {}
         print(LawDocumentDrafting.draft_estate_document(args.draft_estate, parties, provisions))
-    
-    # Court commands
-    elif args.federal_court:
-        print(json.dumps(USCourts.get_federal_court(args.federal_court), indent=2))
-    elif args.state_court:
-        state, court_type = args.state_court
-        print(json.dumps(USCourts.get_state_court(state, court_type), indent=2))
-    
     else:
         parser.print_help()
     
