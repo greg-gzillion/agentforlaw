@@ -840,3 +840,376 @@ elif args.opinion_dbs:
     print("\n📚 PUBLIC OPINION DATABASES:")
     for name, url in dbs.items():
         print(f"  • {name.title()}: {url}")
+
+class LawDocumentDrafting:
+    """Draft documents USING law - contracts, wills, trusts, estates
+    This is application of law (statutes, codes, regulations), not legal practice"""
+    
+    @staticmethod
+    def draft_contract(contract_type: str, parties: Dict, terms: Dict) -> str:
+        """Draft a contract based on contract law (UCC, common law)"""
+        
+        templates = {
+            "service": {
+                "title": "SERVICE CONTRACT",
+                "clauses": [
+                    "PARTIES: {party_a} and {party_b} agree as follows.",
+                    "SERVICES: {services} shall be performed.",
+                    "TERM: This contract begins on {start_date} and ends on {end_date}.",
+                    "PAYMENT: {payment} shall be paid as consideration.",
+                    "GOVERNING LAW: This contract is governed by {governing_law} law.",
+                    "REMEDIES: Upon breach, the non-breaching party may seek {remedies}."
+                ]
+            },
+            "sale": {
+                "title": "SALES CONTRACT",
+                "clauses": [
+                    "PARTIES: {seller} sells to {buyer} the following goods.",
+                    "GOODS: {goods_description}",
+                    "PRICE: {price} shall be paid.",
+                    "DELIVERY: Delivery shall occur {delivery_terms}.",
+                    "TITLE AND RISK: Title and risk of loss pass to buyer {risk_transfer}.",
+                    "WARRANTIES: {warranties} apply to the goods.",
+                    "GOVERNING LAW: This contract is governed by Uniform Commercial Code Article 2."
+                ]
+            },
+            "employment": {
+                "title": "EMPLOYMENT CONTRACT",
+                "clauses": [
+                    "PARTIES: {employer} employs {employee}.",
+                    "POSITION: Employee shall serve as {position}.",
+                    "TERM: Employment begins on {start_date} and continues {duration}.",
+                    "COMPENSATION: Employee shall receive {salary} plus {benefits}.",
+                    "DUTIES: Employee shall perform {duties}.",
+                    "TERMINATION: Employment may be terminated {termination_terms}.",
+                    "RESTRICTIVE COVENANTS: Employee agrees to {restrictions}.",
+                    "GOVERNING LAW: This contract is governed by {governing_law} employment law."
+                ]
+            },
+            "lease": {
+                "title": "LEASE CONTRACT",
+                "clauses": [
+                    "PARTIES: {landlord} leases to {tenant} the premises.",
+                    "PREMISES: {property_description}",
+                    "TERM: The lease term is {lease_term} beginning on {start_date}.",
+                    "RENT: Tenant shall pay {rent_amount} per {rent_period}.",
+                    "SECURITY DEPOSIT: Tenant deposits {deposit_amount} as security.",
+                    "USE: Premises shall be used for {permitted_use} only.",
+                    "MAINTENANCE: {maintenance_responsibility} shall maintain the premises.",
+                    "DEFAULT: Default occurs upon {default_conditions}.",
+                    "GOVERNING LAW: This lease is governed by {governing_law} property law."
+                ]
+            },
+            "partnership": {
+                "title": "PARTNERSHIP CONTRACT",
+                "clauses": [
+                    "PARTIES: {partner_a} and {partner_b} form a partnership.",
+                    "NAME: The partnership shall be known as {partnership_name}.",
+                    "PURPOSE: The partnership purpose is {business_purpose}.",
+                    "CAPITAL: Each partner contributes {capital_contributions}.",
+                    "PROFITS AND LOSSES: Profits and losses shall be shared {sharing_ratio}.",
+                    "MANAGEMENT: {management_structure} shall manage the partnership.",
+                    "WITHDRAWAL: A partner may withdraw {withdrawal_terms}.",
+                    "DISSOLUTION: The partnership dissolves upon {dissolution_events}.",
+                    "GOVERNING LAW: This partnership is governed by {governing_law} partnership law."
+                ]
+            },
+            "loan": {
+                "title": "LOAN CONTRACT",
+                "clauses": [
+                    "PARTIES: {lender} lends to {borrower}.",
+                    "PRINCIPAL: The principal amount is {principal_amount}.",
+                    "INTEREST: Interest accrues at {interest_rate}% per annum.",
+                    "REPAYMENT: Borrower shall repay {repayment_schedule}.",
+                    "DEFAULT: Default occurs upon {default_conditions}.",
+                    "COLLATERAL: The loan is secured by {collateral_description}.",
+                    "GOVERNING LAW: This loan is governed by {governing_law} banking law."
+                ]
+            }
+        }
+        
+        template = templates.get(contract_type, templates["service"])
+        
+        # Fill in the clauses
+        result = f"\n{'=' * 70}\n{template['title']}\n{'=' * 70}\n\n"
+        for clause in template['clauses']:
+            filled = clause.format(**parties, **terms)
+            result += f"{filled}\n\n"
+        
+        result += f"\nIN WITNESS WHEREOF, the parties execute this contract.\n\n"
+        result += f"{parties.get('party_a', 'First Party')}: ___________________\n"
+        result += f"{parties.get('party_b', 'Second Party')}: ___________________\n"
+        result += f"Date: {datetime.now().strftime('%B %d, %Y')}\n"
+        result += f"{'=' * 70}\n"
+        
+        return result
+    
+    @staticmethod
+    def draft_will(testator: Dict, provisions: Dict) -> str:
+        """Draft a will based on probate law and statutes"""
+        date = datetime.now().strftime("%B %d, %Y")
+        
+        return f"""
+{'=' * 70}
+LAST WILL AND TESTAMENT
+OF {testator.get('name', '___________________')}
+{'=' * 70}
+
+I, {testator.get('name', '___________________')}, residing at {testator.get('address', '___________________')}, being of sound mind and memory, do hereby make, publish, and declare this to be my Last Will and Testament, hereby revoking all prior wills and codicils.
+
+ARTICLE I: FAMILY
+I am married to {testator.get('spouse', '___________________')}.
+I have the following children: {testator.get('children', '___________________')}.
+
+ARTICLE II: EXECUTOR
+I appoint {provisions.get('executor', '___________________')} as Executor of this Will.
+If my Executor is unable or unwilling to serve, I appoint {provisions.get('alternate_executor', '___________________')} as successor Executor.
+
+ARTICLE III: GUARDIAN
+If any of my children are minors at my death, I appoint {provisions.get('guardian', '___________________')} as Guardian of their persons and estates.
+
+ARTICLE IV: SPECIFIC BEQUESTS
+I give and bequeath the following specific property:
+{provisions.get('specific_bequests', 'None.')}
+
+ARTICLE V: RESIDUARY CLAUSE
+All the rest, residue, and remainder of my estate, real and personal, wherever situated, I give, devise, and bequeath to {provisions.get('residuary_beneficiary', '___________________')}.
+
+ARTICLE VI: SIMULTANEOUS DEATH
+If my spouse and I die under circumstances such that it is uncertain who survived the other, I direct that my spouse shall be deemed to have predeceased me for purposes of this Will.
+
+ARTICLE VII: NO CONTEST
+If any beneficiary under this Will contests this Will or any of its provisions, that beneficiary shall receive nothing from my estate.
+
+ARTICLE VIII: GOVERNING LAW
+This Will is governed by the probate laws of the State of {provisions.get('governing_state', '___________________')}.
+
+IN WITNESS WHEREOF, I have hereunto set my hand and seal on this {date}.
+
+{'-' * 70}
+
+{s testator.get('name', '___________________')} (Testator)
+
+The foregoing instrument, consisting of ___ pages, was signed, published, and declared by {testator.get('name', '___________________')} as their Last Will and Testament in our presence, who at their request and in their presence, and in the presence of each other, have hereunto subscribed our names as witnesses.
+
+Witness 1: ___________________   Address: ___________________
+Witness 2: ___________________   Address: ___________________
+
+{'=' * 70}
+"""
+    
+    @staticmethod
+    def draft_trust(settlor: Dict, provisions: Dict) -> str:
+        """Draft a trust based on trust law and statutes"""
+        date = datetime.now().strftime("%B %d, %Y")
+        
+        return f"""
+{'=' * 70}
+REVOCABLE LIVING TRUST AGREEMENT
+OF {settlor.get('name', '___________________')}
+{'=' * 70}
+
+This Trust Agreement is made on {date} by and between {settlor.get('name', '___________________')} as Settlor, and {provisions.get('trustee', '___________________')} as Trustee.
+
+ARTICLE I: TRUST NAME
+This Trust shall be known as the {provisions.get('trust_name', '___________________')} Trust.
+
+ARTICLE II: TRUST PROPERTY
+Settlor transfers to the Trustee the property described in Schedule A attached hereto (the "Trust Estate").
+
+ARTICLE III: BENEFICIARIES
+The beneficiaries of this Trust are: {provisions.get('beneficiaries', '___________________')}.
+
+ARTICLE IV: TRUSTEE POWERS
+The Trustee shall have the following powers:
+{provisions.get('trustee_powers', 'All powers conferred by state trust law.')}
+
+ARTICLE V: DISTRIBUTIONS
+During Settlor's lifetime, the Trustee shall distribute income and principal as follows:
+{provisions.get('distributions_during_life', 'As Settlor directs.')}
+
+Upon Settlor's death, the Trustee shall distribute the remaining Trust Estate as follows:
+{provisions.get('distributions_at_death', 'To the beneficiaries in equal shares.')}
+
+ARTICLE VI: AMENDMENT AND REVOCATION
+Settlor reserves the right to amend or revoke this Trust at any time by written instrument delivered to the Trustee.
+
+ARTICLE VII: SUCCESSOR TRUSTEE
+If the initial Trustee is unable or unwilling to serve, {provisions.get('successor_trustee', '___________________')} shall serve as successor Trustee.
+
+ARTICLE VIII: GOVERNING LAW
+This Trust is governed by the laws of the State of {provisions.get('governing_state', '___________________')}.
+
+IN WITNESS WHEREOF, the parties have executed this Trust Agreement on the date first written above.
+
+{'-' * 70}
+
+{settlor.get('name', '___________________')} (Settlor)
+
+{provisions.get('trustee', '___________________')} (Trustee)
+
+{'=' * 70}
+"""
+    
+    @staticmethod
+    def draft_estate_document(document_type: str, parties: Dict, provisions: Dict) -> str:
+        """Draft estate documents - power of attorney, health care directive, living will"""
+        
+        if document_type == "power_of_attorney":
+            return LawDocumentDrafting._draft_power_of_attorney(parties, provisions)
+        elif document_type == "healthcare_directive":
+            return LawDocumentDrafting._draft_healthcare_directive(parties, provisions)
+        elif document_type == "living_will":
+            return LawDocumentDrafting._draft_living_will(parties, provisions)
+        else:
+            return f"Unknown document type. Available: power_of_attorney, healthcare_directive, living_will"
+    
+    @staticmethod
+    def _draft_power_of_attorney(parties: Dict, provisions: Dict) -> str:
+        date = datetime.now().strftime("%B %d, %Y")
+        return f"""
+{'=' * 70}
+DURABLE POWER OF ATTORNEY
+{'=' * 70}
+
+KNOW ALL PERSONS BY THESE PRESENTS:
+
+I, {parties.get('principal', '___________________')} (the "Principal"), residing at {parties.get('address', '___________________')}, do hereby appoint {provisions.get('agent', '___________________')} (the "Agent") as my true and lawful Attorney-in-Fact.
+
+POWERS GRANTED
+My Agent shall have full power and authority to act on my behalf in all matters, including:
+{provisions.get('powers', 'Real property, financial, tax, and legal matters.')}
+
+DURATION
+This Power of Attorney is durable and shall not be affected by my subsequent disability or incapacity.
+
+THIRD PARTY RELIANCE
+Any third party relying on a copy of this document shall be fully protected.
+
+GOVERNING LAW
+This Power of Attorney is governed by the laws of the State of {provisions.get('governing_state', '___________________')}.
+
+IN WITNESS WHEREOF, I have executed this Power of Attorney on {date}.
+
+{'-' * 70}
+
+{parties.get('principal', '___________________')} (Principal)
+
+STATE OF {provisions.get('governing_state', '________')}
+COUNTY OF {provisions.get('county', '________')}
+
+Subscribed and sworn before me on {date}.
+
+Notary Public: ___________________
+My Commission Expires: ___________
+
+{'=' * 70}
+"""
+    
+    @staticmethod
+    def _draft_healthcare_directive(parties: Dict, provisions: Dict) -> str:
+        date = datetime.now().strftime("%B %d, %Y")
+        return f"""
+{'=' * 70}
+ADVANCE HEALTH CARE DIRECTIVE
+{'=' * 70}
+
+I, {parties.get('principal', '___________________')}, being of sound mind, make this Advance Health Care Directive.
+
+ARTICLE I: HEALTH CARE AGENT
+I appoint {provisions.get('agent', '___________________')} as my Health Care Agent.
+If my Agent is unable to serve, I appoint {provisions.get('alternate_agent', '___________________')} as successor Agent.
+
+ARTICLE II: AGENT'S AUTHORITY
+My Agent has full authority to make all health care decisions for me, including:
+- Consent, refuse, or withdraw treatment
+- Hire and fire medical providers
+- Access my medical records
+- Make decisions about organ donation
+
+ARTICLE III: END-OF-LIFE DECISIONS
+{provisions.get('end_of_life', 'I direct that life-sustaining treatment be withheld or withdrawn if I have a terminal condition or permanent unconsciousness.')}
+
+ARTICLE IV: ANATOMICAL GIFTS
+{provisions.get('anatomical_gifts', 'I donate my organs for transplantation.')}
+
+ARTICLE V: EFFECTIVE DATE
+This Directive becomes effective when I lack capacity to make health care decisions.
+
+IN WITNESS WHEREOF, I have executed this Directive on {date}.
+
+{'-' * 70}
+
+{parties.get('principal', '___________________')} (Principal)
+
+Witness 1: ___________________
+Witness 2: ___________________
+
+{'=' * 70}
+"""
+    
+    @staticmethod
+    def _draft_living_will(parties: Dict, provisions: Dict) -> str:
+        date = datetime.now().strftime("%B %d, %Y")
+        return f"""
+{'=' * 70}
+LIVING WILL
+DECLARATION OF {parties.get('declarant', '___________________')}
+{'=' * 70}
+
+I, {parties.get('declarant', '___________________')}, being of sound mind, make this Declaration.
+
+DIRECTIVE
+If I have a terminal condition or am permanently unconscious, I direct that:
+{provisions.get('directive', 'Life-sustaining treatment shall be withheld or withdrawn.')}
+
+TREATMENT PREFERENCES
+{provisions.get('preferences', 'I wish to receive pain medication even if it hastens my death.')}
+
+ORGAN DONATION
+{provisions.get('organ_donation', 'I consent to organ and tissue donation.')}
+
+EXECUTION
+I execute this Living Will on {date}.
+
+{'-' * 70}
+
+{parties.get('declarant', '___________________')} (Declarant)
+
+Witnesses:
+
+Witness 1: ___________________
+Witness 2: ___________________
+
+{'=' * 70}
+"""
+
+# Add to CLI arguments
+parser.add_argument("--draft-contract", help="Draft a contract (service, sale, employment, lease, partnership, loan)")
+parser.add_argument("--draft-will", action="store_true", help="Draft a last will and testament")
+parser.add_argument("--draft-trust", action="store_true", help="Draft a revocable living trust")
+parser.add_argument("--draft-estate", help="Draft estate document (power_of_attorney, healthcare_directive, living_will)")
+parser.add_argument("--parties", help="JSON string of party information")
+parser.add_argument("--provisions", help="JSON string of contract provisions")
+
+# Add to main
+elif args.draft_contract:
+    parties = json.loads(args.parties) if args.parties else {}
+    provisions = json.loads(args.provisions) if args.provisions else {}
+    result = LawDocumentDrafting.draft_contract(args.draft_contract, parties, provisions)
+    print(result)
+elif args.draft_will:
+    parties = json.loads(args.parties) if args.parties else {}
+    provisions = json.loads(args.provisions) if args.provisions else {}
+    result = LawDocumentDrafting.draft_will(parties, provisions)
+    print(result)
+elif args.draft_trust:
+    parties = json.loads(args.parties) if args.parties else {}
+    provisions = json.loads(args.provisions) if args.provisions else {}
+    result = LawDocumentDrafting.draft_trust(parties, provisions)
+    print(result)
+elif args.draft_estate:
+    parties = json.loads(args.parties) if args.parties else {}
+    provisions = json.loads(args.provisions) if args.provisions else {}
+    result = LawDocumentDrafting.draft_estate_document(args.draft_estate, parties, provisions)
+    print(result)
