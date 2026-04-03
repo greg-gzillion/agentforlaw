@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """
-agentforlaw - Agent that studies and works with law (statutes, codes, regulations, constitutions)
-Part of the claw ecosystem: rustypycraw, eagleclaw, crustyclaw, claw-coder, agentforlaw
+agentforlaw - Agent of Law
+Studies and applies LAW (statutes, codes, regulations, constitutions)
+Does NOT practice law. Does NOT give legal advice. Does NOT engage in legal practice.
 """
 
 import json
@@ -75,11 +76,11 @@ class SharedMemory:
         self.conn.close()
 
 class LawDocumentDrafting:
-    """Draft law documents: rules, statutes, codes, regulations, constitutions, notices, writs"""
+    """Draft law documents - statutes, codes, regulations, constitutions"""
     
     @staticmethod
     def draft(document_type: str, params: Dict) -> str:
-        """Draft a law document based on type"""
+        """Draft a law document"""
         
         if document_type == "statute":
             return LawDocumentDrafting._draft_statute(params)
@@ -104,7 +105,6 @@ class LawDocumentDrafting:
     
     @staticmethod
     def _draft_statute(params: Dict) -> str:
-        """Draft a statute (written law passed by legislature)"""
         date = datetime.now().strftime("%Y")
         return f"""
 [STATUTE]
@@ -113,9 +113,9 @@ Citation: {params.get('citation', 'Public Law ___')}
 Enacted: {date}
 
 Section 1. {params.get('section_1', 'Short title.')}
-Section 2. {params.get('section_2', 'Findings and purpose.')}
+Section 2. {params.get('section_2', 'Findings.')}
 Section 3. {params.get('section_3', 'Definitions.')}
-Section 4. {params.get('section_4', 'Substantive provisions.')}
+Section 4. {params.get('section_4', 'Substance.')}
 Section 5. {params.get('section_5', 'Enforcement.')}
 Section 6. {params.get('section_6', 'Effective date.')}
 
@@ -124,150 +124,124 @@ Passed by the Legislature.
     
     @staticmethod
     def _draft_regulation(params: Dict) -> str:
-        """Draft a regulation (agency rule)"""
         return f"""
 [REGULATION]
-Agency: {params.get('agency', 'Agency Name')}
+Agency: {params.get('agency', 'Agency')}
 Citation: {params.get('citation', '___ CFR ___')}
-Title: {params.get('title', 'Rule Title')}
+Title: {params.get('title', 'Rule')}
 
 § {params.get('section', '1.0')} Purpose.
-{params.get('purpose', 'This regulation establishes rules for...')}
+{params.get('purpose', 'Purpose statement.')}
 
 § {params.get('section', '2.0')} Definitions.
-{params.get('definitions', 'Terms defined.')}
+{params.get('definitions', 'Definitions.')}
 
 § {params.get('section', '3.0')} Requirements.
-{params.get('requirements', 'Persons subject to this regulation shall...')}
+{params.get('requirements', 'Requirements.')}
 
 § {params.get('section', '4.0')} Enforcement.
-{params.get('enforcement', 'Violations subject to penalty.')}
+{params.get('enforcement', 'Enforcement.')}
 
 Effective: {params.get('effective', '30 days after publication')}
 """
     
     @staticmethod
     def _draft_code_section(params: Dict) -> str:
-        """Draft a code section"""
         return f"""
 [CODE SECTION]
-Code: {params.get('code', 'United States Code')}
+Code: {params.get('code', 'Code')}
 Title: {params.get('title', '___')}
 Section: {params.get('section', '§ ___')}
 
-(a) {params.get('subsection_a', 'General rule.')}
-(b) {params.get('subsection_b', 'Exceptions.')}
-(c) {params.get('subsection_c', 'Penalties.')}
-(d) {params.get('subsection_d', 'Definitions.')}
+(a) {params.get('subsection_a', 'Rule.')}
+(b) {params.get('subsection_b', 'Exception.')}
+(c) {params.get('subsection_c', 'Penalty.')}
 """
     
     @staticmethod
     def _draft_constitutional_article(params: Dict) -> str:
-        """Draft a constitutional article"""
         return f"""
 [CONSTITUTION]
 Article: {params.get('article', '___')}
 Section: {params.get('section', '___')}
 
-Clause 1. {params.get('clause_1', 'Text of clause.')}
-Clause 2. {params.get('clause_2', 'Text of clause.')}
-Clause 3. {params.get('clause_3', 'Text of clause.')}
+Clause 1. {params.get('clause_1', 'Text.')}
+Clause 2. {params.get('clause_2', 'Text.')}
+Clause 3. {params.get('clause_3', 'Text.')}
 
-Ratified: {params.get('ratified', 'Date of ratification')}
+Ratified: {params.get('ratified', 'Date')}
 """
     
     @staticmethod
     def _draft_notice(params: Dict) -> str:
-        """Draft a notice (formal announcement)"""
         date = datetime.now().strftime("%B %d, %Y")
         return f"""
 [NOTICE]
 Date: {date}
-To: {params.get('to', 'All concerned parties')}
-From: {params.get('from', 'Issuing authority')}
-Subject: {params.get('subject', 'Notice of action')}
+To: {params.get('to', 'Parties')}
+From: {params.get('from', 'Authority')}
+Subject: {params.get('subject', 'Notice')}
 
-Notice is hereby given that:
-{params.get('body', 'The following action is taken.')}
+Notice is given that:
+{params.get('body', 'Notice text.')}
 
 Effective: {params.get('effective', 'Upon publication')}
 """
     
     @staticmethod
     def _draft_writ(params: Dict) -> str:
-        """Draft a writ (formal written order)"""
         date = datetime.now().strftime("%B %d, %Y")
         return f"""
 [WRIT]
 Date: {date}
 To: {params.get('to', 'Recipient')}
-From: {params.get('from', 'Issuing authority')}
-Case: {params.get('case', 'Case number')}
+From: {params.get('from', 'Authority')}
 
-ORDERED: {params.get('order', 'The recipient shall take the following action.')}
+ORDERED: {params.get('order', 'Order text.')}
 
-Returnable by: {params.get('return_date', 'Date of return')}
+Returnable by: {params.get('return_date', 'Date')}
 """
     
     @staticmethod
     def _draft_rule(params: Dict) -> str:
-        """Draft a rule"""
         return f"""
 [RULE]
-Rule Number: {params.get('number', '___')}
-Title: {params.get('title', 'Rule title')}
+Number: {params.get('number', '___')}
+Title: {params.get('title', 'Rule')}
 
 (a) {params.get('subpart_a', 'Rule text.')}
 (b) {params.get('subpart_b', 'Rule text.')}
 (c) {params.get('subpart_c', 'Rule text.')}
 
-Effective: {params.get('effective', 'Date effective')}
+Effective: {params.get('effective', 'Date')}
 """
     
     @staticmethod
     def _draft_order(params: Dict) -> str:
-        """Draft an order"""
         date = datetime.now().strftime("%B %d, %Y")
         return f"""
 [ORDER]
 Date: {date}
-Case: {params.get('case', 'Case number')}
+Case: {params.get('case', 'Case')}
 
-ORDERED, ADJUDGED, AND DECREED that:
-{params.get('decree', 'The following is ordered.')}
+ORDERED: {params.get('decree', 'Order text.')}
 
 So ordered.
 """
     
     @staticmethod
     def _draft_finding(params: Dict) -> str:
-        """Draft a finding of fact or law"""
         return f"""
 [FINDING]
-Case: {params.get('case', 'Case number')}
-Finding: {params.get('finding_type', 'Finding of fact')}
+Case: {params.get('case', 'Case')}
 
 The finder finds that:
-{params.get('finding', 'The following facts are established.')}
+{params.get('finding', 'Finding text.')}
 
-Conclusion: {params.get('conclusion', 'Based on the findings, the following conclusion.')}
+Conclusion: {params.get('conclusion', 'Conclusion.')}
 """
 
 class LawRetriever:
-    @staticmethod
-    def get_case_text(case_name: str) -> Dict:
-        try:
-            url = f"https://www.courtlistener.com/api/rest/v3/opinions/?search={case_name.replace(' ', '+')}"
-            response = requests.get(url, timeout=10)
-            if response.status_code == 200:
-                data = response.json()
-                if data.get('results'):
-                    r = data['results'][0]
-                    return {"case": case_name, "citation": r.get('citation', 'Unknown'), "url": r.get('absolute_url', '')}
-            return {"error": "Not found", "url": f"https://www.courtlistener.com/?q={case_name.replace(' ', '+')}"}
-        except:
-            return {"error": "API error", "url": f"https://scholar.google.com/scholar?q={case_name.replace(' ', '+')}"}
-    
     @staticmethod
     def get_statute(citation: str) -> Dict:
         parts = citation.upper().replace('USC', '').strip().split()
@@ -296,11 +270,11 @@ class LawReasoner:
     
     def analyze(self, question: str) -> str:
         if not self.groq_available:
-            return "GROQ_API_KEY not set. Install groq for law analysis."
+            return "GROQ_API_KEY not set."
         try:
             response = self.client.chat.completions.create(
                 model="llama-3.3-70b-versatile",
-                messages=[{"role": "user", "content": f"As an agent of law, analyze this question about statutes, codes, or regulations: {question}"}],
+                messages=[{"role": "user", "content": f"Answer this question about statutes, codes, regulations, or constitutions: {question}"}],
                 max_tokens=500
             )
             return response.choices[0].message.content
@@ -316,41 +290,35 @@ class AgentForLaw:
         self.regulatory_agencies = {
             "sec": {"name": "Securities and Exchange Commission", "url": "https://www.sec.gov/"},
             "cftc": {"name": "Commodity Futures Trading Commission", "url": "https://www.cftc.gov/"},
-            "finra": {"name": "FINRA", "url": "https://www.finra.org/"},
-            "fincen": {"name": "FinCEN", "url": "https://www.fincen.gov/"},
-            "ofac": {"name": "OFAC", "url": "https://ofac.treasury.gov/"}
+            "finra": {"name": "FINRA", "url": "https://www.finra.org/"}
         }
         
         self.domains = {
-            "constitutional": "Constitution, fundamental law",
-            "statutory": "Written laws passed by legislatures",
-            "regulatory": "Agency rules and regulations",
-            "securities": "SEC, FINRA rules",
-            "aml": "FinCEN, FATF rules"
+            "constitutional": "Constitution",
+            "statutory": "Statutes",
+            "regulatory": "Regulations",
+            "securities": "Securities laws"
         }
+    
+    def get_agency(self, name: str) -> Dict:
+        return self.regulatory_agencies.get(name.lower(), {"error": "Not found"})
+    
+    def get_all_agencies(self) -> List[str]:
+        return list(self.regulatory_agencies.keys())
 
 def main():
     import argparse
     parser = argparse.ArgumentParser(description="agentforlaw - Agent of Law")
     
-    # Info commands
     parser.add_argument("--agencies", action="store_true", help="List agencies")
     parser.add_argument("--agency", help="Get agency info")
     parser.add_argument("--domains", action="store_true", help="List law domains")
-    
-    # Memory commands
     parser.add_argument("--remember", nargs=2, metavar=('KEY', 'VALUE'), help="Store in shared memory")
     parser.add_argument("--recall", help="Recall from shared memory")
     parser.add_argument("--agents", action="store_true", help="Show other agents")
-    
-    # Research commands
-    parser.add_argument("--case-text", help="Get case text")
-    parser.add_argument("--statute", help="Get statute (e.g., '15 USC 78a')")
-    parser.add_argument("--regulation", help="Get regulation (e.g., '17 CFR 240.10b-5')")
+    parser.add_argument("--statute", help="Get statute URL")
+    parser.add_argument("--regulation", help="Get regulation URL")
     parser.add_argument("--analyze", help="Analyze law question")
-    parser.add_argument("--recent", choices=["scotus"], help="Recent cases")
-    
-    # Drafting commands
     parser.add_argument("--draft", choices=["statute", "regulation", "code_section", "constitutional_article", "notice", "writ", "rule", "order", "finding"], help="Draft a law document")
     parser.add_argument("--params", help="JSON parameters for drafting")
     
@@ -358,7 +326,7 @@ def main():
     agent = AgentForLaw()
     
     if args.agencies:
-        print("\nRegulatory Agencies:")
+        print("\nAgencies:")
         for a in agent.get_all_agencies():
             print(f"  {a.upper()}")
     elif args.agency:
@@ -382,18 +350,12 @@ def main():
         print("\nOther Agents:")
         for name, caps in others:
             print(f"  {name}: {caps[:60]}...")
-    elif args.case_text:
-        print(json.dumps(LawRetriever.get_case_text(args.case_text), indent=2))
     elif args.statute:
         print(json.dumps(LawRetriever.get_statute(args.statute), indent=2))
     elif args.regulation:
         print(json.dumps(LawRetriever.get_regulation(args.regulation), indent=2))
     elif args.analyze:
-        print(f"\n📜 Analysis:\n{agent.reasoner.analyze(args.analyze)}\n")
-    elif args.recent:
-        if args.recent == "scotus":
-            from LawRetriever import get_recent_scotus
-            print(json.dumps(RealTimeMonitor.get_recent_scotus(), indent=2))
+        print(f"\n{agent.reasoner.analyze(args.analyze)}\n")
     elif args.draft:
         params = json.loads(args.params) if args.params else {}
         result = LawDocumentDrafting.draft(args.draft, params)
