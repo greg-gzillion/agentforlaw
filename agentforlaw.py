@@ -334,3 +334,202 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+class ConstitutionAccess:
+    @staticmethod
+    def get_article(article: int, section: int = None) -> Dict:
+        articles = {
+            1: "Legislative Branch - Congress",
+            2: "Executive Branch - President",
+            3: "Judicial Branch - Courts",
+            4: "States' Powers",
+            5: "Amendment Process",
+            6: "Federal Supremacy",
+            7: "Ratification"
+        }
+        result = {"article": article, "title": articles.get(article, "Unknown")}
+        if section:
+            result["section"] = section
+            result["url"] = f"https://www.law.cornell.edu/constitution/article{article}#section{section}"
+        else:
+            result["url"] = f"https://www.law.cornell.edu/constitution/article{article}"
+        return result
+    
+    @staticmethod
+    def get_amendment(number: int) -> Dict:
+        amendments = {
+            1: "Freedom of speech, religion, press, assembly, petition",
+            2: "Right to bear arms",
+            4: "Search and seizure protection",
+            5: "Due process, self-incrimination, double jeopardy",
+            6: "Speedy trial, right to counsel",
+            8: "Cruel and unusual punishment prohibition",
+            10: "Powers reserved to states",
+            13: "Abolition of slavery",
+            14: "Equal protection, due process, citizenship",
+            19: "Women's suffrage"
+        }
+        return {
+            "amendment": number,
+            "summary": amendments.get(number, "Text not in library"),
+            "url": f"https://www.law.cornell.edu/constitution/amendment{number}"
+        }
+
+class RegulationAccess:
+    @staticmethod
+    def get_cfr(citation: str) -> Dict:
+        import re
+        match = re.search(r'(\d+)\s+CFR\s+([\d\.]+)', citation, re.IGNORECASE)
+        if match:
+            title = match.group(1)
+            section = match.group(2)
+            return {
+                "citation": citation,
+                "url": f"https://www.ecfr.gov/current/title-{title}/section-{section}",
+                "title": f"Title {title}, Section {section}"
+            }
+        return {"error": "Invalid format. Example: 17 CFR 240.10b-5"}
+
+class CourtData:
+    @staticmethod
+    def get_state_court(state: str, opinion_type: str = "recent") -> Dict:
+        state_lower = state.lower().replace(" ", "_")
+        courts = {
+            "california": {"supreme": "https://supreme.courts.ca.gov/", "appellate": "https://www.courts.ca.gov/courtsofappeal.htm"},
+            "texas": {"supreme": "https://www.txcourts.gov/supreme/", "criminal": "https://www.txcourts.gov/cca/"},
+            "new_york": {"supreme": "https://www.nycourts.gov/ctapps/", "appellate": "https://www.nycourts.gov/courts/ad1/"},
+            "florida": {"supreme": "https://www.floridasupremecourt.org/", "appellate": "https://www.flcourts.gov/Florida-Courts/District-Courts-of-Appeal"}
+        }
+        court = courts.get(state_lower, {"error": f"State '{state}' data not loaded"})
+        return {"state": state, "court": court, "opinions_url": f"https://www.courtlistener.com/?q={state}+supreme+court"}
+
+class ClauseLibrary:
+    CLAUSES = {
+        "indemnification": "The indemnifying party shall defend, indemnify, and hold harmless the indemnified party from and against any and all claims, damages, losses, liabilities, costs, and expenses arising out of or relating to this Agreement.",
+        "confidentiality": "The receiving party shall not disclose the disclosing party's confidential information to any third party without prior written consent.",
+        "termination": "Either party may terminate this Agreement upon {days} days written notice to the other party.",
+        "governing_law": "This Agreement shall be governed by and construed in accordance with the laws of the State of {state}.",
+        "arbitration": "Any dispute arising under this Agreement shall be resolved by binding arbitration in accordance with the rules of the American Arbitration Association.",
+        "force_majeure": "Neither party shall be liable for delays or failures in performance resulting from causes beyond its reasonable control.",
+        "entire_agreement": "This Agreement constitutes the entire agreement between the parties and supersedes all prior agreements."
+    }
+    
+    @staticmethod
+    def get_clause(name: str, params: Dict = None) -> str:
+        clause = ClauseLibrary.CLAUSES.get(name, f"Clause '{name}' not found")
+        if params:
+            for key, value in params.items():
+                clause = clause.replace(f"{{{key}}}", str(value))
+        return clause
+    
+    @staticmethod
+    def list_clauses() -> List[str]:
+        return list(ClauseLibrary.CLAUSES.keys())
+
+class LegalDefinitions:
+    DEFINITIONS = {
+        "consideration": "Something of value given in exchange for a promise in a contract. Under contract law, consideration is necessary for a contract to be enforceable.",
+        "due_process": "Constitutional requirement that the government must respect all legal rights owed to a person. Fifth and Fourteenth Amendments.",
+        "tort": "A civil wrong that causes harm to another person, giving the harmed person the right to sue for damages.",
+        "contract": "A legally enforceable agreement between two or more parties.",
+        "negligence": "Failure to exercise reasonable care, resulting in harm to another person.",
+        "jurisdiction": "The authority of a court to hear and decide a case.",
+        "precedent": "A legal decision that serves as an example or rule for future similar cases.",
+        "statute_of_limitations": "A law that sets the maximum time parties have to initiate legal proceedings.",
+        "liability": "Legal responsibility for one's actions or omissions.",
+        "damages": "Money awarded to a party who has suffered loss or injury."
+    }
+    
+    @staticmethod
+    def define(term: str) -> Dict:
+        term_lower = term.lower()
+        return {
+            "term": term,
+            "definition": LegalDefinitions.DEFINITIONS.get(term_lower, "Definition not found in library"),
+            "source": "Black's Law Dictionary (reference)"
+        }
+    
+    @staticmethod
+    def list_terms() -> List[str]:
+        return list(LegalDefinitions.DEFINITIONS.keys())
+
+class WillStateVariations:
+    @staticmethod
+    def get_state_rules(state: str, will_type: str = "standard") -> Dict:
+        rules = {
+            "california": {
+                "witnesses": 2,
+                "holographic": "Valid if signed and dated by testator",
+                "community_property": "Spouse has community property rights",
+                "elective_share": "Spouse may take 1/2 of community property"
+            },
+            "texas": {
+                "witnesses": 2,
+                "holographic": "Valid if entirely in testator's handwriting",
+                "community_property": "Separate and community property recognized",
+                "elective_share": "Spouse may take life estate in homestead"
+            },
+            "florida": {
+                "witnesses": 2,
+                "holographic": "Not recognized",
+                "elective_share": "Spouse may take 30% of elective estate"
+            },
+            "new_york": {
+                "witnesses": 2,
+                "holographic": "Valid only for military personnel",
+                "elective_share": "Spouse may take greater of $50,000 or 1/3"
+            }
+        }
+        return rules.get(state.lower(), {"error": f"State '{state}' rules not loaded"})
+
+# Add to argument parser section (before args = parser.parse_args())
+parser.add_argument("--constitution", action="store_true", help="Access Constitution")
+parser.add_argument("--article", type=int, help="Constitution article number")
+parser.add_argument("--section", type=int, help="Constitution section number")
+parser.add_argument("--amendment", type=int, help="Constitution amendment number")
+parser.add_argument("--cfr", help="Get CFR regulation (e.g., '17 CFR 240.10b-5')")
+parser.add_argument("--state-court", help="Get state court info")
+parser.add_argument("--opinions", action="store_true", help="Include opinions URL")
+parser.add_argument("--clause", help="Get contract clause (indemnification, confidentiality, etc.)")
+parser.add_argument("--clause-params", help="JSON params for clause")
+parser.add_argument("--list-clauses", action="store_true", help="List all available clauses")
+parser.add_argument("--define", help="Define a legal term")
+parser.add_argument("--list-terms", action="store_true", help="List all definable terms")
+parser.add_argument("--will-state", help="Get will rules for a state")
+parser.add_argument("--will-type", default="standard", help="Type of will (standard, holographic)")
+
+# Add to main after other handlers
+elif args.constitution:
+    if args.amendment:
+        print(json.dumps(ConstitutionAccess.get_amendment(args.amendment), indent=2))
+    elif args.article:
+        print(json.dumps(ConstitutionAccess.get_article(args.article, args.section), indent=2))
+    else:
+        print(json.dumps({"error": "Use --article or --amendment"}, indent=2))
+
+elif args.cfr:
+    print(json.dumps(RegulationAccess.get_cfr(args.cfr), indent=2))
+
+elif args.state_court:
+    result = CourtData.get_state_court(args.state_court)
+    print(json.dumps(result, indent=2))
+
+elif args.clause:
+    params = json.loads(args.clause_params) if args.clause_params else {}
+    print(ClauseLibrary.get_clause(args.clause, params))
+
+elif args.list_clauses:
+    print("\n📋 Available Contract Clauses:")
+    for c in ClauseLibrary.list_clauses():
+        print(f"  • {c}")
+
+elif args.define:
+    print(json.dumps(LegalDefinitions.define(args.define), indent=2))
+
+elif args.list_terms:
+    print("\n📖 Legal Terms Available:")
+    for t in LegalDefinitions.list_terms():
+        print(f"  • {t}")
+
+elif args.will_state:
+    print(json.dumps(WillStateVariations.get_state_rules(args.will_state, args.will_type), indent=2))
