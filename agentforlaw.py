@@ -651,3 +651,192 @@ elif args.list_subjects:
     print("\n📚 LAW SUBJECTS:")
     for s in subjects:
         print(f"  • {s.replace('_', ' ').title()}")
+
+class USCourts:
+    """Access to all public US courts - federal and state"""
+    
+    # Federal Courts
+    FEDERAL_COURTS = {
+        "supreme_court": {
+            "name": "Supreme Court of the United States",
+            "url": "https://www.supremecourt.gov/",
+            "opinions": "https://www.supremecourt.gov/opinions/opinions.aspx",
+            "oral_arguments": "https://www.oyez.org/",
+            "docket": "https://www.supremecourt.gov/docket/docket.aspx"
+        },
+        "circuit_courts": {
+            "first_circuit": {"name": "1st Circuit Court of Appeals", "url": "https://www.ca1.uscourts.gov/"},
+            "second_circuit": {"name": "2nd Circuit Court of Appeals", "url": "https://www.ca2.uscourts.gov/"},
+            "third_circuit": {"name": "3rd Circuit Court of Appeals", "url": "https://www.ca3.uscourts.gov/"},
+            "fourth_circuit": {"name": "4th Circuit Court of Appeals", "url": "https://www.ca4.uscourts.gov/"},
+            "fifth_circuit": {"name": "5th Circuit Court of Appeals", "url": "https://www.ca5.uscourts.gov/"},
+            "sixth_circuit": {"name": "6th Circuit Court of Appeals", "url": "https://www.ca6.uscourts.gov/"},
+            "seventh_circuit": {"name": "7th Circuit Court of Appeals", "url": "https://www.ca7.uscourts.gov/"},
+            "eighth_circuit": {"name": "8th Circuit Court of Appeals", "url": "https://www.ca8.uscourts.gov/"},
+            "ninth_circuit": {"name": "9th Circuit Court of Appeals", "url": "https://www.ca9.uscourts.gov/"},
+            "tenth_circuit": {"name": "10th Circuit Court of Appeals", "url": "https://www.ca10.uscourts.gov/"},
+            "eleventh_circuit": {"name": "11th Circuit Court of Appeals", "url": "https://www.ca11.uscourts.gov/"},
+            "dc_circuit": {"name": "DC Circuit Court of Appeals", "url": "https://www.cadc.uscourts.gov/"},
+            "federal_circuit": {"name": "Federal Circuit Court of Appeals", "url": "https://www.cafc.uscourts.gov/"}
+        },
+        "district_courts": {
+            "search": "https://www.uscourts.gov/court-locator",
+            "list": "https://www.uscourts.gov/district-courts",
+            "opinions": "https://www.courtlistener.com/?court=district"
+        },
+        "bankruptcy_courts": {
+            "list": "https://www.uscourts.gov/bankruptcy-courts",
+            "pacer": "https://pacer.uscourts.gov/"
+        },
+        "specialized_courts": {
+            "court_of_international_trade": "https://www.cit.uscourts.gov/",
+            "court_of_federal_claims": "https://www.uscfc.uscourts.gov/",
+            "tax_court": "https://www.ustaxcourt.gov/",
+            "veterans_claims": "https://www.uscourts.cavc.gov/",
+            "armed_forces": "https://www.armfor.uscourts.gov/"
+        }
+    }
+    
+    # State Courts - All 50 States
+    STATE_COURTS = {
+        "alabama": {"supreme": "https://judicial.alabama.gov/library/docs.cfm", "appellate": "https://judicial.alabama.gov/library/appellate"},
+        "alaska": {"supreme": "https://akcourts.gov/courts/supreme-court", "appellate": "https://akcourts.gov/courts/court-of-appeals"},
+        "arizona": {"supreme": "https://www.azcourts.gov/courts/az-supreme-court", "appellate": "https://www.azcourts.gov/courts/court-of-appeals"},
+        "arkansas": {"supreme": "https://arcourts.gov/courts/supreme-court", "appellate": "https://arcourts.gov/courts/court-of-appeals"},
+        "california": {"supreme": "https://supreme.courts.ca.gov/", "appellate": "https://www.courts.ca.gov/courtsofappeal.htm"},
+        "colorado": {"supreme": "https://www.courts.state.co.us/Courts/Supreme_Court/Index.cfm", "appellate": "https://www.courts.state.co.us/Courts/Court_of_Appeals/Index.cfm"},
+        "connecticut": {"supreme": "https://www.jud.ct.gov/supapp/default.htm", "appellate": "https://www.jud.ct.gov/courts/appellate.html"},
+        "delaware": {"supreme": "https://courts.delaware.gov/supreme/", "chancery": "https://courts.delaware.gov/chancery/"},
+        "florida": {"supreme": "https://www.floridasupremecourt.org/", "appellate": "https://www.flcourts.gov/Florida-Courts/District-Courts-of-Appeal"},
+        "georgia": {"supreme": "https://www.gasupreme.us/", "appellate": "https://www.gaappeals.us/"},
+        "hawaii": {"supreme": "https://www.courts.state.hi.us/courts/supreme_court", "appellate": "https://www.courts.state.hi.us/courts/intermediate_court_of_appeals"},
+        "idaho": {"supreme": "https://isc.idaho.gov/", "appellate": "https://isc.idaho.gov/appellate"},
+        "illinois": {"supreme": "https://illinoiscourts.gov/courts/supreme-court", "appellate": "https://illinoiscourts.gov/courts/appellate-court"},
+        "indiana": {"supreme": "https://www.in.gov/courts/supreme/", "appellate": "https://www.in.gov/courts/appeals/"},
+        "iowa": {"supreme": "https://www.iowacourts.gov/for-the-public/court-directory/supreme-court/", "appellate": "https://www.iowacourts.gov/for-the-public/court-directory/court-of-appeals/"},
+        "kansas": {"supreme": "https://www.kscourts.org/Courts/Supreme-Court", "appellate": "https://www.kscourts.org/Courts/Court-of-Appeals"},
+        "kentucky": {"supreme": "https://kycourts.gov/Courts/Supreme-Court/Pages/default.aspx", "appellate": "https://kycourts.gov/Courts/Court-of-Appeals/Pages/default.aspx"},
+        "louisiana": {"supreme": "https://www.lasc.org/", "appellate": "https://www.la-courtofappeal.org/"},
+        "maine": {"supreme": "https://www.courts.maine.gov/courts/sjc/", "appellate": "https://www.courts.maine.gov/courts/sjc/appellate"},
+        "maryland": {"supreme": "https://www.courts.state.md.us/courts/appellate/supremecourt", "appellate": "https://www.courts.state.md.us/courts/appellate/appellatecourt"},
+        "massachusetts": {"supreme": "https://www.mass.gov/orgs/supreme-judicial-court", "appellate": "https://www.mass.gov/orgs/appeals-court"},
+        "michigan": {"supreme": "https://www.courts.michigan.gov/courts/michigan-supreme-court/", "appellate": "https://www.courts.michigan.gov/courts/court-of-appeals/"},
+        "minnesota": {"supreme": "https://www.mncourts.gov/SupremeCourt.aspx", "appellate": "https://www.mncourts.gov/CourtofAppeals.aspx"},
+        "mississippi": {"supreme": "https://courts.ms.gov/supremecourt/supremecourt.php", "appellate": "https://courts.ms.gov/courtofappeals/courtofappeals.php"},
+        "missouri": {"supreme": "https://www.courts.mo.gov/page.jsp?id=27", "appellate": "https://www.courts.mo.gov/page.jsp?id=28"},
+        "montana": {"supreme": "https://courts.mt.gov/supreme", "appellate": "https://courts.mt.gov/other_courts/appellate"},
+        "nebraska": {"supreme": "https://supremecourt.nebraska.gov/", "appellate": "https://supremecourt.nebraska.gov/courts/court-appeals"},
+        "nevada": {"supreme": "https://nvcourts.gov/Supreme/", "appellate": "https://nvcourts.gov/Court_of_Appeals/"},
+        "new_hampshire": {"supreme": "https://www.courts.state.nh.us/supreme/", "appellate": "https://www.courts.state.nh.us/supreme/appellate"},
+        "new_jersey": {"supreme": "https://www.njcourts.gov/courts/supreme", "appellate": "https://www.njcourts.gov/courts/appellate"},
+        "new_mexico": {"supreme": "https://supremecourt.nmcourts.gov/", "appellate": "https://coa.nmcourts.gov/"},
+        "new_york": {"supreme": "https://www.nycourts.gov/ctapps/", "appellate": "https://www.nycourts.gov/courts/ad1/"},  # Court of Appeals is highest
+        "north_carolina": {"supreme": "https://www.nccourts.gov/courts/supreme-court", "appellate": "https://www.nccourts.gov/courts/court-of-appeals"},
+        "north_dakota": {"supreme": "https://www.ndcourts.gov/court/supreme-court", "appellate": "https://www.ndcourts.gov/court/court-of-appeals"},
+        "ohio": {"supreme": "https://www.supremecourt.ohio.gov/", "appellate": "https://www.supremecourt.ohio.gov/appellate"},
+        "oklahoma": {"supreme": "https://www.oscn.net/", "appellate": "https://www.okhistory.org/courts"},
+        "oregon": {"supreme": "https://www.courts.oregon.gov/courts/supreme/Pages/default.aspx", "appellate": "https://www.courts.oregon.gov/courts/court-of-appeals/Pages/default.aspx"},
+        "pennsylvania": {"supreme": "https://www.pacourts.us/courts/supreme-court", "appellate": "https://www.pacourts.us/courts/commonwealth-court"},
+        "rhode_island": {"supreme": "https://www.courts.ri.gov/Courts/SupremeCourt/Pages/default.aspx", "appellate": "https://www.courts.ri.gov/Courts/SuperiorCourt/Pages/default.aspx"},
+        "south_carolina": {"supreme": "https://www.sccourts.org/supreme/", "appellate": "https://www.sccourts.org/courtAppeals/"},
+        "south_dakota": {"supreme": "https://ujs.sd.gov/Supreme_Court/", "appellate": "https://ujs.sd.gov/Appellate_Court/"},
+        "tennessee": {"supreme": "https://www.tncourts.gov/courts/supreme-court", "appellate": "https://www.tncourts.gov/courts/court-appeals"},
+        "texas": {"supreme": "https://www.txcourts.gov/supreme/", "criminal_appeals": "https://www.txcourts.gov/cca/", "appellate": "https://www.txcourts.gov/courts-of-appeals/"},
+        "utah": {"supreme": "https://www.utcourts.gov/courts/supreme/", "appellate": "https://www.utcourts.gov/courts/appellate/"},
+        "vermont": {"supreme": "https://www.vermontjudiciary.org/supreme-court", "appellate": "https://www.vermontjudiciary.org/appellate-division"},
+        "virginia": {"supreme": "https://www.vacourts.gov/courts/scv/home.html", "appellate": "https://www.vacourts.gov/courts/cav/home.html"},
+        "washington": {"supreme": "https://www.courts.wa.gov/appellate_trial_courts/supreme/", "appellate": "https://www.courts.wa.gov/appellate_trial_courts/court_of_appeals/"},
+        "west_virginia": {"supreme": "https://www.courtswv.gov/supreme-court", "appellate": "https://www.courtswv.gov/intermediate-court"},
+        "wisconsin": {"supreme": "https://www.wicourts.gov/courts/supreme/index.htm", "appellate": "https://www.wicourts.gov/courts/appeals/index.htm"},
+        "wyoming": {"supreme": "https://www.courts.state.wy.us/supreme-court", "appellate": "https://www.courts.state.wy.us/appellate-court"}
+    }
+    
+    # Court opinion databases (public access)
+    OPINION_DATABASES = {
+        "courtlistener": "https://www.courtlistener.com/",
+        "google_scholar_cases": "https://scholar.google.com/scholar?as_sdt=4%2C5&as_vis=1",
+        "justia_federal": "https://law.justia.com/cases/federal/",
+        "justia_state": "https://law.justia.com/cases/",
+        "findlaw_cases": "https://caselaw.findlaw.com/",
+        "cornell_lii": "https://www.law.cornell.edu/opinions.html",
+        "open_case_law": "https://open.case.law/",
+        "harvard_case_law": "https://case.law/",
+        "pacer": "https://pacer.uscourts.gov/",
+        "recap": "https://www.courtlistener.com/recap/"
+    }
+    
+    @staticmethod
+    def get_federal_court(court_name: str) -> Dict:
+        """Get federal court by name"""
+        if court_name == "supreme_court":
+            return USCourts.FEDERAL_COURTS["supreme_court"]
+        elif court_name in USCourts.FEDERAL_COURTS["circuit_courts"]:
+            return USCourts.FEDERAL_COURTS["circuit_courts"][court_name]
+        else:
+            return {"error": f"Court '{court_name}' not found"}
+    
+    @staticmethod
+    def get_state_court(state: str, court_type: str = "supreme") -> Dict:
+        """Get state court by state name"""
+        state_key = state.lower().replace(" ", "_")
+        if state_key in USCourts.STATE_COURTS:
+            court = USCourts.STATE_COURTS[state_key]
+            return court.get(court_type, court.get("supreme", {"error": "Court type not found"}))
+        return {"error": f"State '{state}' not found"}
+    
+    @staticmethod
+    def list_federal_circuits() -> List[str]:
+        """List all federal circuit courts"""
+        return list(USCourts.FEDERAL_COURTS["circuit_courts"].keys())
+    
+    @staticmethod
+    def list_states() -> List[str]:
+        """List all states"""
+        return list(USCourts.STATE_COURTS.keys())
+    
+    @staticmethod
+    def search_all_courts(query: str) -> Dict:
+        """Search all courts for a case"""
+        return {
+            "search_term": query,
+            "supreme_court": f"https://www.supremecourt.gov/search.aspx?search={query.replace(' ', '%20')}",
+            "courtlistener": f"https://www.courtlistener.com/search/?q={query.replace(' ', '+')}",
+            "justia": f"https://law.justia.com/cases/?q={query.replace(' ', '+')}",
+            "google_scholar": f"https://scholar.google.com/scholar?q={query.replace(' ', '+')}"
+        }
+
+# Add to argument parser
+parser.add_argument("--federal-court", help="Get federal court (supreme_court, first_circuit, second_circuit, etc.)")
+parser.add_argument("--state-court", nargs=2, metavar=('STATE', 'TYPE'), help="Get state court (e.g., 'california supreme')")
+parser.add_argument("--list-circuits", action="store_true", help="List all federal circuits")
+parser.add_argument("--list-states", action="store_true", help="List all states")
+parser.add_argument("--search-courts", help="Search all courts for a case")
+parser.add_argument("--opinion-dbs", action="store_true", help="List opinion databases")
+
+# Add to main
+elif args.federal_court:
+    result = USCourts.get_federal_court(args.federal_court)
+    print(json.dumps(result, indent=2))
+elif args.state_court:
+    state, court_type = args.state_court
+    result = USCourts.get_state_court(state, court_type)
+    print(json.dumps(result, indent=2))
+elif args.list_circuits:
+    circuits = USCourts.list_federal_circuits()
+    print("\n🏛️ FEDERAL CIRCUIT COURTS:")
+    for c in circuits:
+        print(f"  • {c.replace('_', ' ').title()}")
+elif args.list_states:
+    states = USCourts.list_states()
+    print("\n🗺️ ALL 50 STATES:")
+    for s in states[:25]:
+        print(f"  • {s.replace('_', ' ').title()}")
+    print("  ... and 25 more")
+elif args.search_courts:
+    result = USCourts.search_all_courts(args.search_courts)
+    print(json.dumps(result, indent=2))
+elif args.opinion_dbs:
+    dbs = USCourts.OPINION_DATABASES
+    print("\n📚 PUBLIC OPINION DATABASES:")
+    for name, url in dbs.items():
+        print(f"  • {name.title()}: {url}")
