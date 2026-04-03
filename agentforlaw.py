@@ -212,3 +212,159 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+        # REGULATORY AGENCIES
+        self.regulatory_agencies = {
+            # Securities & Finance
+            "sec": {
+                "name": "Securities and Exchange Commission",
+                "url": "https://www.sec.gov/",
+                "edgar": "https://www.sec.gov/edgar",
+                "rules": "https://www.sec.gov/rules-regulations",
+                "enforcement": "https://www.sec.gov/enforcement",
+                "crypto": "https://www.sec.gov/crypto"
+            },
+            "cftc": {
+                "name": "Commodity Futures Trading Commission",
+                "url": "https://www.cftc.gov/",
+                "rules": "https://www.cftc.gov/LawRegulation/index.htm",
+                "enforcement": "https://www.cftc.gov/Enforcement/index.htm",
+                "digital_assets": "https://www.cftc.gov/digitalassets"
+            },
+            "dttc": {
+                "name": "Depository Trust & Clearing Corporation",
+                "url": "https://www.dtcc.com/",
+                "legal": "https://www.dtcc.com/legal",
+                "rules": "https://www.dtcc.com/rules"
+            },
+            "finra": {
+                "name": "Financial Industry Regulatory Authority",
+                "url": "https://www.finra.org/",
+                "rules": "https://www.finra.org/rules-guidance",
+                "arbitration": "https://www.finra.org/arbitration-mediation"
+            },
+            "federal_reserve": {
+                "name": "Federal Reserve System",
+                "url": "https://www.federalreserve.gov/",
+                "regulations": "https://www.federalreserve.gov/supervisionreg/reglisting.htm",
+                "banking": "https://www.federalreserve.gov/banking.htm"
+            },
+            "fdic": {
+                "name": "Federal Deposit Insurance Corporation",
+                "url": "https://www.fdic.gov/",
+                "regulations": "https://www.fdic.gov/regulations",
+                "laws": "https://www.fdic.gov/regulations/laws"
+            },
+            "occ": {
+                "name": "Office of the Comptroller of the Currency",
+                "url": "https://www.occ.treas.gov/",
+                "regulations": "https://www.occ.treas.gov/topics/supervision-and-examination/index-supervision.html"
+            },
+            
+            # Market & Trading
+            "cme": {
+                "name": "CME Group",
+                "url": "https://www.cmegroup.com/",
+                "rules": "https://www.cmegroup.com/rulebook",
+                "market_regulation": "https://www.cmegroup.com/market-regulation"
+            },
+            "ice": {
+                "name": "Intercontinental Exchange",
+                "url": "https://www.theice.com/",
+                "rules": "https://www.theice.com/regulation"
+            },
+            
+            # Treasury & Tax
+            "irs": {
+                "name": "Internal Revenue Service",
+                "url": "https://www.irs.gov/",
+                "tax_code": "https://www.irs.gov/tax-professionals/tax-code-regulations-and-official-guidance",
+                "crypto": "https://www.irs.gov/businesses/small-businesses-self-employed/virtual-currencies"
+            },
+            "treasury": {
+                "name": "US Department of Treasury",
+                "url": "https://home.treasury.gov/",
+                "ofac": "https://ofac.treasury.gov/",
+                "sanctions": "https://sanctionssearch.ofac.treas.gov/"
+            },
+            
+            # Anti-Money Laundering
+            "fincen": {
+                "name": "Financial Crimes Enforcement Network",
+                "url": "https://www.fincen.gov/",
+                "regulations": "https://www.fincen.gov/resources/statutes-regulations",
+                "crypto_guidance": "https://www.fincen.gov/virtual-currency"
+            },
+            
+            # Banking
+            "oCC": {
+                "name": "Office of the Comptroller of the Currency",
+                "url": "https://www.occ.treas.gov/",
+                "interpretations": "https://www.occ.treas.gov/topics/supervision-and-examination/index-supervision.html"
+            },
+            
+            # Consumer Protection
+            "cfpb": {
+                "name": "Consumer Financial Protection Bureau",
+                "url": "https://www.consumerfinance.gov/",
+                "rules": "https://www.consumerfinance.gov/rules-policy",
+                "enforcement": "https://www.consumerfinance.gov/enforcement"
+            },
+            "ftc": {
+                "name": "Federal Trade Commission",
+                "url": "https://www.ftc.gov/",
+                "rules": "https://www.ftc.gov/legal-library/browse/rules",
+                "privacy": "https://www.ftc.gov/privacy-security"
+            },
+            
+            # Blockchain & Crypto Specific
+            "ofac": {
+                "name": "Office of Foreign Assets Control",
+                "url": "https://ofac.treasury.gov/",
+                "sanctions_list": "https://ofac.treasury.gov/specially-designated-nationals-list-sdn-list",
+                "crypto_sanctions": "https://ofac.treasury.gov/cryptocurrency"
+            },
+            "fincen_crypto": {
+                "name": "FinCEN Virtual Currency Guidance",
+                "url": "https://www.fincen.gov/virtual-currency",
+                "travel_rule": "https://www.fincen.gov/travel-rule",
+                "bsa": "https://www.fincen.gov/bsa"
+            },
+            
+            # International
+            "iosco": {
+                "name": "International Organization of Securities Commissions",
+                "url": "https://www.iosco.org/",
+                "crypto": "https://www.iosco.org/crypto"
+            },
+            "fatf": {
+                "name": "Financial Action Task Force",
+                "url": "https://www.fatf-gafi.org/",
+                "virtual_assets": "https://www.fatf-gafi.org/topics/virtual-assets/"
+            }
+        }
+        
+        # Add method to get agency info
+    def get_agency(self, agency_name: str) -> Dict:
+        """Get information about a regulatory agency"""
+        agency = self.regulatory_agencies.get(agency_name.lower())
+        if agency:
+            return agency
+        return {"error": f"Agency '{agency_name}' not found", "available": list(self.regulatory_agencies.keys())}
+    
+    def get_all_agencies(self) -> List[str]:
+        """List all regulatory agencies"""
+        return list(self.regulatory_agencies.keys())
+
+    elif args.agencies:
+        agencies = agent.get_all_agencies()
+        print("\n📋 Regulatory Agencies:")
+        for a in sorted(agencies):
+            print(f"  {a.upper()}")
+    elif args.agency:
+        result = agent.get_agency(args.agency)
+        print(json.dumps(result, indent=2))
+
+# Add to argument parser
+parser.add_argument("--agencies", action="store_true", help="List all regulatory agencies")
+parser.add_argument("--agency", help="Get information about a specific agency (SEC, CFTC, DTTC, etc.)")
