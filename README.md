@@ -1,6 +1,6 @@
 # ⚖️ AGENT FOR LAW
 
-**An agent that studies, understands, and applies LAW 
+**An agent that searches, displays, and helps write documents for LAW 
 
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/)
 [![Law](https://img.shields.io/badge/domain-LAW-red.svg)]()
@@ -10,7 +10,7 @@
 ---
 
 ## 📜 WHAT IS AGENT FOR LAW?
-AgentForLaw is a tool for referencing Law
+AgentForLaw is a tool for referencing Law and to assist in writing documents
 
 | Concept | Meaning | AgentForLaw Role |
 |---------|---------|------------------|
