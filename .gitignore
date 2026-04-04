@@ -2,3 +2,29 @@
 CLAW.local.md
 .claw_memory/
 .claw_audit/
+.env
+.venv/
+.env
+.venv/
+
+# Secrets - NEVER COMMIT
+.env
+*.env
+*.key
+*.pem
+credentials*
+secret*
+
+# Virtual environment
+.venv/
+venv/
+env/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Backup files
+*.bak
+*.backup
+*.broken
