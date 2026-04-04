@@ -101,3 +101,44 @@ async def memory_recall(key: str):
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
+
+# Knowledge Base Endpoints
+knowledge_base = {}
+
+@app.post("/knowledge/learn")
+async def learn(request: Request):
+    data = await request.json()
+    topic = data.get("topic")
+    content = data.get("content")
+    
+    if not topic or not content:
+        return {"error": "topic and content required"}
+    
+    timestamp = datetime.now().strftime("%Y-%m-%d-%H%M%S")
+    filename = f".claw/knowledge/{timestamp}-{topic.replace(' ', '-')}.md"
+    
+    with open(filename, "w") as f:
+        f.write(f"# {topic}\n\n{content}\n\n---\nLearned: {datetime.now()}")
+    
+    knowledge_base[topic] = content
+    
+    return {"stored": topic, "file": filename}
+
+@app.get("/knowledge/recall/{topic}")
+async def recall(topic: str):
+    if topic in knowledge_base:
+        return {"found": True, "content": knowledge_base[topic]}
+    
+    # Search files
+    import glob
+    for f in glob.glob(f".claw/knowledge/*{topic}*.md"):
+        with open(f, "r") as file:
+            return {"found": True, "source": f, "content": file.read()}
+    
+    return {"found": False, "message": f"No knowledge found for '{topic}'"}
+
+@app.get("/knowledge/list")
+async def list_knowledge():
+    import glob
+    files = glob.glob(".claw/knowledge/*.md")
+    return {"entries": [f.replace(".claw/knowledge/", "") for f in files]}

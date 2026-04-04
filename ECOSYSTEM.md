@@ -46,9 +46,6 @@ python agentforlaw.py --analyze "What is consideration?" --groq
 Ollama (For Privacy)
 
 bash
-curl -fsSL https://ollama.com/install.sh | sh
-ollama pull codellama:7b
-python agentforlaw.py --analyze "What is due process?" --ollama
 Which Agents Use AI
 Agent	AI Features	Provider Support
 agentforlaw	Legal analysis	Groq, Ollama
@@ -130,7 +127,6 @@ python agentforlaw.py --remember "due_process" "5th and 14th Amendments guarante
 python agentforlaw.py --analyze "What is due process in contract law?" --groq
 
 # AI analysis using local Ollama
-python agentforlaw.py --analyze "Explain the Howey test" --ollama
 AgentForLaw Commands (Law Agent)
 Command	Purpose
 --statute "15 USC 78a"	Look up US Code
@@ -187,9 +183,6 @@ python agentforlaw.py --list-models
 # Should show:
 # groq/llama-3.3-70b-versatile
 # groq/llama-3.1-8b-instant
-# ollama/codellama:7b
-# ollama/deepseek-coder:6.7b
-# ollama/llama3.2:3b
 Troubleshooting
 Shared Memory Not Working
 bash
@@ -209,7 +202,6 @@ bash
 echo $GROQ_API_KEY
 
 # Test Ollama
-ollama list
 
 # List available models
 python agentforlaw.py --list-models

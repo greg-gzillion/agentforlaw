@@ -20,7 +20,6 @@
 |---------|-------------|----------|---------|
 | `--analyze "question"` | Analyze legal question | Auto | `--analyze "What is tort law?"` |
 | `--analyze --provider groq` | Use Groq (fastest) | Groq | `--analyze "Explain contract" --provider groq` |
-| `--analyze --provider ollama` | Use Ollama (local) | Ollama | `--analyze "Define negligence" --provider ollama` |
 | `--analyze --provider deepseek` | Use DeepSeek | DeepSeek | `--analyze "SEC v. Ripple" --provider deepseek` |
 | `--list-models` | List all available models | All | `--list-models` |
 | `--recommend "task"` | Get model recommendation | - | `--recommend legal_analysis` |
@@ -29,10 +28,7 @@
 
 | Task | Best Models |
 |------|-------------|
-| `legal_analysis` | groq/llama-3.3-70b, deepseek/deepseek-chat, ollama/codellama:7b |
 | `contract_drafting` | deepseek/deepseek-coder, groq/llama-3.1-8b |
-| `quick_definition` | groq/llama-3.1-8b-instant, ollama/llama3.2:3b |
-| `private_analysis` | ollama/codellama:7b, ollama/mistral:7b |
 | `long_document` | groq/mixtral-8x7b, deepseek/deepseek-chat |
 
 ## 📜 CONSTITUTION COMMANDS
